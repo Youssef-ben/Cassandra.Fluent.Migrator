@@ -1,0 +1,23 @@
+name: Cassandra Fluent library, Build and Test tasks
+
+on:
+  push:
+    branches: [ master, dev ]
+  pull_request:
+    branches: [ master, dev ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+        
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 'v3.1.4'
+
+    - name: Run resotre
+      run: dotnet restore
+    
+    - name: Run build
+      run: dotnet build
