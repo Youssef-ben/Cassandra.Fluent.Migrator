@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cassandra.Fluent.Migrator", "Cassandra.Fluent.Migrator\Cassandra.Fluent.Migrator.csproj", "{9BEE3D9F-BA48-474F-934A-B3DACD0FC2E4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9BEE3D9F-BA48-474F-934A-B3DACD0FC2E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BEE3D9F-BA48-474F-934A-B3DACD0FC2E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BEE3D9F-BA48-474F-934A-B3DACD0FC2E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BEE3D9F-BA48-474F-934A-B3DACD0FC2E4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E7C27FDA-F602-4D80-8631-EDC95F328A68}
+	EndGlobalSection
+EndGlobal
