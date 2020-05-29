@@ -12,7 +12,7 @@ This section defines the classes and their roles in the library.
 
 ### Cassandra Migrator
 
-INterface : `ICassandraMigrator`
+Interface : `ICassandraMigrator`
 Handler   : `CassandraMigrator`
 
 This class is the core of the library, most of the logic to fetch and execute the migration will be handled by it.
@@ -99,6 +99,9 @@ ApplyMigrationAsync();
 ```
 
 ### Migration Helper
+
+Interface: `IFluentCassandraMigrator`
+Handler  : `FluentCassandraMigrator`
 
 This Class will contain the methods that will be needed by the user to create his migrations. It offers a set of method that can be chained together for fluent code.
 
@@ -205,50 +208,6 @@ Table<Entity>.RenameColumnAsync("OldName", "TargetName");
 Table<Entity>.DeleteColumnAsync("FieldName");
 ```
 
-* `Materialized View:` Set of methods to handle the [Creation/Alter/Rename/Delete] of a Materialized View.
-
-```CSharp
-/*
-* Create a new Materialized View if not exists. Otherwise it does nothing.
-* Note :
-*    - PrimaryKeyFieldName : The field that will be a primary key for the View. (Required)
-*    - SecondaryKeyFieldName: The field that will be a secondary key. Will be ignored if empty. (Optional)
-*    - ClusterKeyFieldName: The field that will be a cluster key. Will be ignored if empty. (Optional)
-*    - ViewName : If the field is {Null || Empty} it will take the Entity name.
-*/
-Table<Entity>.CreateViewAsync("ViewName", "PrimaryKeyFieldName", "SecondaryKeyFieldName", "ClusterKeyFieldName");
-Table<Entity>.CreateViewAsync("ViewName", "PrimaryKeyFieldName", "SecondaryKeyFieldName");
-Table<Entity>.CreateViewAsync("ViewName", "PrimaryKeyFieldName");
-Table<Entity>.CreateViewAsync("PrimaryKeyFieldName", "SecondaryKeyFieldName", "ClusterKeyFieldName");
-Table<Entity>.CreateViewAsync("PrimaryKeyFieldName", "SecondaryKeyFieldName");
-Table<Entity>.CreateViewAsync("PrimaryKeyFieldName");
-
-
-/*
-* Alter the Materialized view Column if exists. Otherwise it does nothing.
-* Note :
-*    - If the {ColumnType: NONE} it will be a simple column.
-*/
-Table<Entity>.AlterViewColumnAsync("FieldName", ColumnType.[Primary|| Secondary|| Cluster || None]);
-Table<Entity>.AlterViewColumnAsync("FieldName");
-
-/*
-* Rename the Materialized View if exists. Otherwise it does nothing.
-* Note :
-*    - If the {TargetName: [Null || Empty]} the function will take the Entity name.
-*/
-Table<Entity>.RenameViewAsync("OldViewName", "TargetName");
-Table<Entity>.RenameViewAsync("OldViewName");
-
-/*
-* Delete the Materialized View if exists. Otherwise it does nothing.
-* Note :
-*    - If the {ViewName: [Null || Empty]} the function will take the Entity name.
-*/
-Table<Entity>.DropViewAsync("ViewName");
-Table<Entity>.DropViewAsync();
-```
-
 * `User Defined Types:` Sets of methods to handle the [Creation/Alter/Rename/Delete] of a User-Defined Type.
 
 ```CSharp
@@ -259,6 +218,14 @@ Table<Entity>.DropViewAsync();
 */
 Entity.CreateUserDefinedTypeAsync("UdtName");
 Entity.CreateUserDefinedTypeAsync();
+
+/*
+* Add a Column if not exists to the table. Otherwise it does nothing.
+* Note :
+*    - If the {Type: [Null || Empty]} the function will get the type from the {Entity} directly.
+*/
+Entity.AddColumnAsync("FieldName", "Type");
+Entity.AddColumnAsync("FieldName");
 
 /*
 * Rename the User-Defined Type if exists. Otherwise it does nothing.
@@ -300,4 +267,33 @@ Entity.AlterUdtRenameColumnAsync("OldName", "TargetName");
 * Delete Udt Column if Exists. Otherwise it does nothing.
 */
 Entity.AlterUdtDeleteColumnAsync("FieldName");
+```
+
+* `Materialized View:` Set of methods to handle the [Creation/Alter/Rename/Delete] of a Materialized View.
+
+_`Note:` it's prefered to delete and create the view with the specief values columns and configuration_
+
+```CSharp
+/*
+* Create a new Materialized View if not exists. Otherwise it does nothing.
+* Note :
+*    - PrimaryKeyFieldName : The field that will be a primary key for the View. (Required)
+*    - SecondaryKeyFieldName: The field that will be a secondary key. Will be ignored if empty. (Optional)
+*    - ClusterKeyFieldName: The field that will be a cluster key. Will be ignored if empty. (Optional)
+*    - ViewName : If the field is {Null || Empty} it will take the Entity name.
+*/
+Table<Entity>.CreateViewAsync("ViewName", "PrimaryKeyFieldName", "SecondaryKeyFieldName", "ClusterKeyFieldName");
+Table<Entity>.CreateViewAsync("ViewName", "PrimaryKeyFieldName", "SecondaryKeyFieldName");
+Table<Entity>.CreateViewAsync("ViewName", "PrimaryKeyFieldName");
+Table<Entity>.CreateViewAsync("PrimaryKeyFieldName", "SecondaryKeyFieldName", "ClusterKeyFieldName");
+Table<Entity>.CreateViewAsync("PrimaryKeyFieldName", "SecondaryKeyFieldName");
+Table<Entity>.CreateViewAsync("PrimaryKeyFieldName");
+
+/*
+* Delete the Materialized View if exists. Otherwise it does nothing.
+* Note :
+*    - If the {ViewName: [Null || Empty]} the function will take the Entity name.
+*/
+Table<Entity>.DropViewAsync("ViewName");
+Table<Entity>.DropViewAsync();
 ```
