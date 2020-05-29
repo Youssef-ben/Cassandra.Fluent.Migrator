@@ -1,4 +1,4 @@
-name: Cassandra Fluent library, Build and Test tasks
+name: Cassandra Fluent library
 
 on:
   push:
