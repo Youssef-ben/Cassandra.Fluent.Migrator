@@ -13,6 +13,7 @@ This section defines the classes and their roles in the library.
 ### Cassandra Migrator
 
 Interface : `ICassandraMigrator`
+
 Handler   : `CassandraMigrator`
 
 This class is the core of the library, most of the logic to fetch and execute the migration will be handled by it.
@@ -43,6 +44,18 @@ GetLatestMigration();
 * Get the latest version from the database.
 */
 GetLatestVesion();
+
+/**
+* Get the migrations from the the Dependency Injection `ServiceProvider`.
+* Sort the list by version.
+*/
+GetMigrations()
+
+/**
+* Get The applied migration from the database.
+* Sort the list by version.
+*/
+GetAppliedMigrations()
 ```
 
 * This class wil have its internal helper
@@ -66,30 +79,30 @@ ShouldApplyMigrationAsync(IMigrator migration);
 * Save the Migration Data in the database.
 *     - Create New Entry for the Migration in the {MigrationHistory}.
 */
-Migrator.UpdateMigrationInfo(SchemeDetails)
+UpdateMigrationHistory(SchemeDetails);
 ```
 
 ### Migrator Interface
 
 Name: `IMigrator`
 
-This represent the interface to be used by the user migrations. all the migrations should implement this interface and use it to register the classes to the `Dependency Injection`.
+This represents the interface to be used by the user migrations. all the migrations should implement this interface and use it to register the classes to the `Dependency Injection`.
 
 ```CSharp
 /**
 * Name of the current migration.
 */
-string MigrationName { get; set; }
+string Name { get; set; }
 
 /**
 * Version of the current migration.
 */
-Version MigrationVersion { get; set; }
+Version Version { get; set; }
 
 /**
-* Description of the current migration (optional value).
+* Description of the current migration (Value: Optional).
 */
-string MigrationDescription { get; set; }
+string Description { get; set; }
 
 /**
 * This method will be used by the `CassandraMigrator` to execute the migration.
@@ -101,6 +114,7 @@ ApplyMigrationAsync();
 ### Migration Helper
 
 Interface: `IFluentCassandraMigrator`
+
 Handler  : `FluentCassandraMigrator`
 
 This Class will contain the methods that will be needed by the user to create his migrations. It offers a set of method that can be chained together for fluent code.
@@ -113,6 +127,8 @@ This Class should be called in the constructor of the user migration and should 
 it define the following methods:
 
 _**Note:** it's recomended to use strings instead of `nameof(...)` when using the migration methods this will allow to keep a certain consistency in your migrations._
+
+_**Note:** the `[...]` represent optional parameter_
 
 ```CSharp
 /*
@@ -181,31 +197,32 @@ GetFieldType("tableName", "FieldName");
 * `Tables:` Set of methods to handle the [Creation/Alter/Rename/Delete] of a table columns.
 
 ```CSharp
+
+CreateTableAsync("table");
+
 /*
 * Add a Column if not exists to the table. Otherwise it does nothing.
 * Note :
 *    - If the {Type: [Null || Empty]} the function will get the type from the {Entity} directly.
 */
-Table<Entity>.AddColumnAsync("FieldName", "Type");
-Table<Entity>.AddColumnAsync("FieldName");
+AddColumnAsync("table", "field", ["Type"]);
 
 /*
 * Alter the type of the Column if exists. Otherwise it does nothing.
 * Note :
 *    - If the {Type: [Null || Empty]} the function will get the type from the {Entity} directly.
 */
-Table<Entity>.AlterColumnAsync("FieldName", "TargetType");
-Table<Entity>.AlterColumnAsync("FieldName");
+AlterColumnAsync("table", "field", ["Type"]);
 
 /*
 * Rename the Column if exists. Otherwise it does nothing.
 */
-Table<Entity>.RenameColumnAsync("OldName", "TargetName");
+RenameColumnAsync("table", "old", "new");
 
 /*
 * Delete the Column if exists. Otherwise it does nothing.
 */
-Table<Entity>.DeleteColumnAsync("FieldName");
+DeleteColumnAsync("table", "field");
 ```
 
 * `User Defined Types:` Sets of methods to handle the [Creation/Alter/Rename/Delete] of a User-Defined Type.
@@ -216,29 +233,14 @@ Table<Entity>.DeleteColumnAsync("FieldName");
 * Note :
 *    - If the [UdtName: {Null || Empty}] the function will take the Entity name.
 */
-Entity.CreateUserDefinedTypeAsync("UdtName");
-Entity.CreateUserDefinedTypeAsync();
-
-/*
-* Add a Column if not exists to the table. Otherwise it does nothing.
-* Note :
-*    - If the {Type: [Null || Empty]} the function will get the type from the {Entity} directly.
-*/
-Entity.AddColumnAsync("FieldName", "Type");
-Entity.AddColumnAsync("FieldName");
-
-/*
-* Rename the User-Defined Type if exists. Otherwise it does nothing.
-*/
-Entity.RenameUserDefinedTypeAsync("OldUdtName", "TargetUdtName");
+CreateUserDefinedTypeAsync("UdtName");
 
 /*
 * Drop a new User-Defined Type if not exists. Otherwise it does nothing.
 * Note :
 *    - If the [UdtName: {Null || Empty}] the function will take the Entity name.
 */
-Entity.DropUserDefinedTypeAsync("UdtName");
-Entity.DropUserDefinedTypeAsync();
+DropUserDefinedTypeAsync("UdtName");
 
 // ***************** [Add/Alter/Rename/Delete] Column from a User-Defined Type ***************** //
 
@@ -247,26 +249,24 @@ Entity.DropUserDefinedTypeAsync();
 * Note :
 *    - If the [Type: {Null || Empty}] the function will take the Type from the Entity.
 */
-Entity.AlterUdtAddColumnAsync("FieldName", "Type");
-Entity.AlterUdtAddColumnAsync("FieldName");
+AlterUdtAddColumnAsync("udt", "field", ["Type"]);
 
 /*
 * Alter Udt Column if Exists. Otherwise it does nothing.
 * Note :
 *    - If the [Type: {Null || Empty}] the function will take the Type from the Entity.
 */
-Entity.AlterUdtAlterColumnAsync("FieldName", "Type");
-Entity.AlterUdtAlterColumnAsync("FieldName");
+AlterUdtAlterColumnAsync("udt", "field", ["Type"]);
 
 /*
 * Rename Udt Column if Exists. Otherwise it does nothing.
 */
-Entity.AlterUdtRenameColumnAsync("OldName", "TargetName");
+AlterUdtRenameColumnAsync("udt", "old", "new");
 
 /*
 * Delete Udt Column if Exists. Otherwise it does nothing.
 */
-Entity.AlterUdtDeleteColumnAsync("FieldName");
+AlterUdtDeleteColumnAsync("udt", "field");
 ```
 
 * `Materialized View:` Set of methods to handle the [Creation/Alter/Rename/Delete] of a Materialized View.
@@ -282,18 +282,18 @@ _`Note:` it's prefered to delete and create the view with the specief values col
 *    - ClusterKeyFieldName: The field that will be a cluster key. Will be ignored if empty. (Optional)
 *    - ViewName : If the field is {Null || Empty} it will take the Entity name.
 */
-Table<Entity>.CreateViewAsync("ViewName", "PrimaryKeyFieldName", "SecondaryKeyFieldName", "ClusterKeyFieldName");
-Table<Entity>.CreateViewAsync("ViewName", "PrimaryKeyFieldName", "SecondaryKeyFieldName");
-Table<Entity>.CreateViewAsync("ViewName", "PrimaryKeyFieldName");
-Table<Entity>.CreateViewAsync("PrimaryKeyFieldName", "SecondaryKeyFieldName", "ClusterKeyFieldName");
-Table<Entity>.CreateViewAsync("PrimaryKeyFieldName", "SecondaryKeyFieldName");
-Table<Entity>.CreateViewAsync("PrimaryKeyFieldName");
+CreateViewAsync("ViewName", "PrimaryKeyFieldName", "SecondaryKeyFieldName", "ClusterKeyFieldName");
+CreateViewAsync("ViewName", "PrimaryKeyFieldName", "SecondaryKeyFieldName");
+CreateViewAsync("ViewName", "PrimaryKeyFieldName");
+CreateViewAsync("PrimaryKeyFieldName", "SecondaryKeyFieldName", "ClusterKeyFieldName");
+CreateViewAsync("PrimaryKeyFieldName", "SecondaryKeyFieldName");
+CreateViewAsync("PrimaryKeyFieldName");
 
 /*
 * Delete the Materialized View if exists. Otherwise it does nothing.
 * Note :
 *    - If the {ViewName: [Null || Empty]} the function will take the Entity name.
 */
-Table<Entity>.DropViewAsync("ViewName");
-Table<Entity>.DropViewAsync();
+DropViewAsync("ViewName");
+DropViewAsync();
 ```
