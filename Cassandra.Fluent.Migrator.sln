@@ -5,6 +5,37 @@ VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cassandra.Fluent.Migrator", "Cassandra.Fluent.Migrator\Cassandra.Fluent.Migrator.csproj", "{9BEE3D9F-BA48-474F-934A-B3DACD0FC2E4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StyleCop", "StyleCop", "{18E3ED8F-21F5-4E39-8849-5A25C88CEDD0}"
+	ProjectSection(SolutionItems) = preProject
+		StyleCopRules.ruleset = StyleCopRules.ruleset
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{348F1051-F6FE-4F43-BEA9-14AC2FC65049}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\cassandra-migrator-design.md = Docs\cassandra-migrator-design.md
+		Docs\cassandra-queries.md = Docs\cassandra-queries.md
+		Docs\example.md = Docs\example.md
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1F6AB2D2-AAA3-4BFA-B4D4-C6EEA232A297}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		Makefile = Makefile
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{BD1D32F1-2977-47C7-A9F4-67F941BBCBFA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{AA6EC9A3-85C4-4FF0-BDE5-1FE4764C3A4C}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\main.yml = .github\workflows\main.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "git", "git", "{9A9341AE-4A3E-4CB0-9CF1-80A70311491C}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,6 +49,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{18E3ED8F-21F5-4E39-8849-5A25C88CEDD0} = {1F6AB2D2-AAA3-4BFA-B4D4-C6EEA232A297}
+		{348F1051-F6FE-4F43-BEA9-14AC2FC65049} = {1F6AB2D2-AAA3-4BFA-B4D4-C6EEA232A297}
+		{BD1D32F1-2977-47C7-A9F4-67F941BBCBFA} = {1F6AB2D2-AAA3-4BFA-B4D4-C6EEA232A297}
+		{AA6EC9A3-85C4-4FF0-BDE5-1FE4764C3A4C} = {BD1D32F1-2977-47C7-A9F4-67F941BBCBFA}
+		{9A9341AE-4A3E-4CB0-9CF1-80A70311491C} = {1F6AB2D2-AAA3-4BFA-B4D4-C6EEA232A297}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E7C27FDA-F602-4D80-8631-EDC95F328A68}
