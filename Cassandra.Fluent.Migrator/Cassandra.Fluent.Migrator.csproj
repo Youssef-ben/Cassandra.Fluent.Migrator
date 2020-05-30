@@ -8,6 +8,12 @@
     <Copyright>GPLv3</Copyright>
     <NeutralLanguage>en</NeutralLanguage>
     <CodeAnalysisRuleSet>$(SolutionDir)\StyleCopRules.ruleset</CodeAnalysisRuleSet>
+    <PackageProjectUrl>https://github.com/Youssef-ben/Cassandra.Fluent.Migrator</PackageProjectUrl>
+    <PackageIcon>favicon.ico</PackageIcon>
+    <PackageIconUrl />
+    <RepositoryUrl>https://github.com/Youssef-ben/Cassandra.Fluent.Migrator</RepositoryUrl>
+    <RepositoryType>Library</RepositoryType>
+    <PackageTags>CSharp, Cassandra, Migrations, .NetCore3,</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='$(Configuration)|AnyCPU'">
@@ -15,11 +21,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CassandraCSharpDriver" Version="3.9.0" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2">
+    <PackageReference Include="CassandraCSharpDriver" Version="3.15.0" />
+    <PackageReference Include="Microsoft.Rest.ClientRuntime.Azure.Authentication" Version="2.4.0" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="favicon.ico">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
   
 </Project>
