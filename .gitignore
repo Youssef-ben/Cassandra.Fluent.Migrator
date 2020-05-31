@@ -476,3 +476,4 @@ MigrationBackup/
 
 # Projects Settings
 appsettings.*.json
+!appsettings.tests.json
