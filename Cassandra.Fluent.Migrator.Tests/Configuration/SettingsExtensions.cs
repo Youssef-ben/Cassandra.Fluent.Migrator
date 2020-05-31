@@ -79,10 +79,10 @@
         private static IConfiguration LoadConfiguration()
         {
             return new ConfigurationBuilder()
-            .AddJsonFile("settings/appsettings.json", false)
-            .AddJsonFile("settings/appsettings.local.json", optional: true)
-            .AddJsonFile("settings/appsettings.development.json", optional: true)
-            .AddJsonFile("settings/appsettings.tests.json", optional: true)
+            .AddJsonFile("Settings/appsettings.json", false)
+            .AddJsonFile("Settings/appsettings.local.json", optional: true)
+            .AddJsonFile("Settings/appsettings.development.json", optional: true)
+            .AddJsonFile("Settings/appsettings.tests.json", optional: true)
             .Build();
         }
     }
