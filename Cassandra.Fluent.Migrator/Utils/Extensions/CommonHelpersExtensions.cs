@@ -17,7 +17,7 @@
         /// <returns>Normalized string.</returns>
         internal static string NormalizeString([NotNull]this ColumnTypeCode self)
         {
-            Check.NotNull(self);
+            Check.NotNull(self, $"The argument [Column type code]");
 
             return self.ToString().Normalize().ToLower(DEFAULT_CUTURE);
         }
@@ -31,7 +31,7 @@
         /// <returns>Normalized string.</returns>
         internal static string NormalizeString([NotNull]this string self)
         {
-            Check.NotEmptyNotNull(self);
+            Check.NotEmptyNotNull(self, $"The method caller");
 
             return self.Trim().Normalize().ToLower(DEFAULT_CUTURE);
         }
@@ -47,7 +47,7 @@
         /// <returns>Returns normalized and formatted text.</returns>
         internal static string NormalizeString([NotNull]this string self, params string[] args)
         {
-            Check.NotEmptyNotNull(self);
+            Check.NotEmptyNotNull(self, $"The method caller");
 
             return string.Format(self, args).NormalizeString();
         }

@@ -1,6 +1,6 @@
 ﻿namespace Cassandra.Fluent.Migrator.Utils.Constants
 {
-    public static class TableCqlStatements
+    internal static class TableCqlStatements
     {
         internal const string TABLE_ADD_COLUMN_STATEMENT = "ALTER TABLE {0} ADD {1} {2};";
 

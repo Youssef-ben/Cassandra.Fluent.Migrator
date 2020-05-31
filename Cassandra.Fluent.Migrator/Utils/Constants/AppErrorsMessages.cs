@@ -1,6 +1,6 @@
 ﻿namespace Cassandra.Fluent.Migrator.Utils.Constants
 {
-    public static class AppErrorsMessages
+    internal static class AppErrorsMessages
     {
         internal const string COLUMN_NOT_FOUND = "Column {0} was not found in table/User-defined type [{1}]!";
 
@@ -22,6 +22,6 @@
 
         internal const string COLUMN_EXISTS_FOR_RENAME = "Cannot rename column {0} to {1} in keyspace {2}, another column with the same name already exist!";
 
-        internal const string OBJECT_NOT_FOUND = "The {0} [{1}], was not found in the specified Cassandra keyspace [{2}]!";
+        internal const string OBJECT_NOT_FOUND = "The {0} [{1}], not found in the specified Cassandra keyspace [{2}]!";
     }
 }
