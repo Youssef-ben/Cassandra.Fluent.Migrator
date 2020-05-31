@@ -2,7 +2,6 @@ name: Cassandra Fluent library
 
 on:
   push:
-    branches: [ master, dev ]
   pull_request:
     branches: [ master, dev ]
 
