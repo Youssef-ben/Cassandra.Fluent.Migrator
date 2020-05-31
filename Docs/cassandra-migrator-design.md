@@ -1,6 +1,6 @@
-# Cassandra Fluent Migrator - Design document
+# Cassandra Fluent Migrator - Design document - Initial draft
 
-This document describes the design and thoughts behind this library (Should be deleted)
+This document describes the design and thoughts behind this library.
 
 (P.S: The library will use the `Ilogger<TClass>` to log all important actions)
 
@@ -16,10 +16,10 @@ Interface : `ICassandraMigrator`
 
 Handler   : `CassandraMigrator`
 
-This class is the core of the library, most of the logic to fetch and execute the migration will be handled by it.
+This class is the core of the library, it will fetch and execute the migrations.
 
-In other words, The role of this Class is to execute all the registred Migration from the Dependency Injection
-by fetching the list and iterate while checking that it's not applied yet.
+In other words, The role of this Class is to execute all the registred Migrations from the Dependency Injection container
+by fetching the list and iterate while checking that the migration isn't applied yet.
 
 The Handler will expose the following methods:
 
@@ -32,33 +32,33 @@ The Handler will expose the following methods:
 *  Loop on the Migrators and check if we need to apply the migration.
 *    - If yes, execute the Migrator method `ApplyMigration[Async]`.
 *    - If not, skip with a message.
+*  If the table [MigrationHistory] doesn't exists it should create it before.
 */
+Migrate();
 MigrateAsync();
 
 /**
 * Get the latest migration from the database
 */
 GetLatestMigration();
-
-/**
-* Get the latest version from the database.
-*/
-GetLatestVesion();
+GetLatestMigrationAsync();
 
 /**
 * Get the migrations from the the Dependency Injection `ServiceProvider`.
 * Sort the list by version.
 */
-GetMigrations()
+GetMigrations();
+GetMigrationsAsync();
 
 /**
 * Get The applied migration from the database.
 * Sort the list by version.
 */
-GetAppliedMigrations()
+GetAppliedMigrations();
+GetAppliedMigrationsAsync()
 ```
 
-* This class wil have its internal helper
+* This class will have its internal helper
 
 ```CSharp
 /**
@@ -68,11 +68,13 @@ GetAppliedMigrations()
 *     - Table Scheme : [MigrationHistory: {Name, Version, CreateAt, Description}
 */
 InitFluentCassandraMigrator();
+InitFluentCassandraMigratorAsync();
 
 /**
 * Validate that the Target version is a valid version.
 * Checks if we should apply the migration.
 */
+ShouldApplyMigration(IMigrator migration);
 ShouldApplyMigrationAsync(IMigrator migration);
 
 /**
@@ -80,6 +82,7 @@ ShouldApplyMigrationAsync(IMigrator migration);
 *     - Create New Entry for the Migration in the {MigrationHistory}.
 */
 UpdateMigrationHistory(SchemeDetails);
+UpdateMigrationHistoryAsync(SchemeDetails);
 ```
 
 ### Migrator Interface
@@ -111,19 +114,20 @@ ApplyMigration();
 ApplyMigrationAsync();
 ```
 
-### Migration Helper
+### Migrator Helper
 
-Interface: `IFluentCassandraMigrator`
+Interface: `ICassandraFluentMigrator`
 
-Handler  : `FluentCassandraMigrator`
+Handler  : `CassandraFluentMigrator`
 
-This Class will contain the methods that will be needed by the user to create his migrations. It offers a set of method that can be chained together for fluent code.
+This Class will contain the methods that will be needed by the user to create his migrations. It should offer a set of methods that can be chained together for fluent code.
 
 This helper will be devided to two sections (Class and extensions)
 
 #### Class
 
 This Class should be called in the constructor of the user migration and should be used as private property.
+
 it define the following methods:
 
 _**Note:** it's recomended to use strings instead of `nameof(...)` when using the migration methods this will allow to keep a certain consistency in your migrations._
@@ -131,65 +135,104 @@ _**Note:** it's recomended to use strings instead of `nameof(...)` when using th
 _**Note:** the `[...]` represent optional parameter_
 
 ```CSharp
-/*
-* Set the Cassandra Session Context.
-*/
-GetCassandraSession();
+/// <summary>
+/// Gets the registred Cassandra session context.
+/// </summary>
+/// <returns>Current instance of the Cassadnra session.</returns>
+ISession GetCassandraSession();
 
-/*
-* Get a Cassandra Instance of the Table.
-*/
-GetTable("TableName");
+/// <summary>
+/// Gets the Cassandra table based on the {TEntity}.
+/// </summary>
+/// <typeparam name="TEntity">The Class that represent a table in Cassandra.</typeparam>
+/// <returns>Instance of the Cassandra table.</returns>
+Table<TEntity> GetTable<TEntity>()
+    where TEntity : class;
 
-/*
-* Checks if the Table exists in the Database.
-*/
-DoesTableExists("TableName");
+/// <summary>
+/// Checks if the table exists in the Cassandra session context.
+/// </summary>
+/// <param name="table">The table we need to search for.</param>
+/// <returns>True, if exists. False otherwise.</returns>
+/// <exception cref="NullReferenceException">Thrown when the table value is null or empty.</exception>
+bool DoesTableExists([NotNull]string table);
 
-/*
-* Checks if the column exists in the table or User-Defined Type.
-*/
-DoesColumnExists("TableName", "ColumnName")
+/// <summary>
+/// Checks if the column exits in the specified table.
+/// </summary>
+///
+/// <remarks>
+/// Before checking that the columns exists, the method first checks that the table exists.
+/// </remarks>
+///
+/// <param name="table">The table we want to search.</param>
+/// <param name="column">The column that we want to search for.</param>
+/// <returns>True, if exists. False, Otherwise.</returns>
+/// <exception cref="NullReferenceException">Thrown when the table or column value is null or empty.</exception>
+/// <exception cref="ObjectNotFoundException">Thrown when the table isn't available in the current casasndra session.</exception>
+bool DoesColumnExists([NotNull]string table, [NotNull]string column);
 
-/*
-* Checks if the Materialized View Exist in the Database.
-*/
-DoesViewExits("ViewName");
+/// <summary>
+/// Checks if the User-Defined type exists in the Cassandra session context.
+/// </summary>
+/// <param name="udt">The User-Defined type that we need to search for.</param>
+/// <returns>True, if exists. False otherwise.</returns>
+/// <exception cref="NullReferenceException">Thrown when the User-Defined type value is null or empty.</exception>
+bool DoesUdtExists([NotNull]string udt);
 
-/*
-* Checks if the User-Defined Type exists in the Database.
-*/
-DoesUdtExists("UdtName");
+/// <summary>
+/// Checks if the column exits in the specified User-Defined type.
+/// </summary>
+///
+/// <remarks>
+/// Before checking that the columns exists, the method first checks that the User-Defined type exists.
+/// </remarks>
+///
+/// <param name="udt">The User-Defined type we want to search.</param>
+/// <param name="column">The column that we want to search for.</param>
+/// <returns>True, if exists. False otherwise.</returns>
+/// <exception cref="NullReferenceException">Thrown when the User-Defined type or column value is null or empty.</exception>
+/// <exception cref="ObjectNotFoundException">Thrown when the User-Defined type isn't available in the current casasndra session.</exception>
+bool DoesUdtColumnExists([NotNull]string udt, [NotNull]string column);
 
-/*
-* Checks if the User-Defined Type has the Specified Column.
-*/
-DoesUdtColumnExists("UdtName", "ColumnName");
+/// <summary>
+/// Checks if the Materialized view exists in the Cassandra session context.
+/// </summary>
+/// <param name="view">The Materialized view that we need to search for.</param>
+/// <returns>True, if exists. False otherwise.</returns>
+/// <exception cref="NullReferenceException">Thrown when the Materialized view value is null or empty.</exception>
+bool DoesMaterializedViewExists([NotNull]string view);
 
-/*
-* Convert C# Type to Cassandra Type (CQL or UDT)
-*
-* tryAction: The Try Action that should be executed to convert the CSharp type.
-*   - SYSTME_TYPE
-*   - LIST_TYPES
-*   - USER_DEFINED_TYPES
-*/
-ConvertToCQLType(Type, TryAction);
+/// <summary>
+/// Checks if the column exits in the specified Materialized view.
+/// </summary>
+///
+/// <remarks>
+/// Before checking that the columns exists, the method first checks that the Materialized view exists.
+/// </remarks>
+///
+/// <param name="view">The Materialized view. we want to search.</param>
+/// <param name="column">The column that we want to search for.</param>
+/// <returns>True, if exists. False otherwise.</returns>
+/// <exception cref="NullReferenceException">Thrown when the Materialized view or the column value is null or empty.</exception>
+/// <exception cref="ObjectNotFoundException">Thrown when the Materialized view isn't available in the current casasndra session.</exception>
+bool DoesMaterializedViewColumnExists([NotNull]string view, [NotNull] string column);
 
-/*
-* Convert the Current Type to a CQL List.
-*/
-ConvertToCqlList(Type);
+/// <summary>
+/// Get the Cassandra CQL type equivalent to the specified CSharp type.
+/// </summary>
+/// <param name="type">The CSharp type to be converted.</param>
+/// <returns>Return string value containing the Cassandra CQL type.</returns>
+string GetCqlType([NotNull]Type type);
 
-/*
-* Convert the Current Type to a CQL User-Defined Type.
-*/
-ConvertToCqlUdt(Type);
-
-/*
-* Get the Type of the Field from the Caller Object.
-*/
-GetFieldType("tableName", "FieldName");
+/// <summary>
+/// Get the Cassandra CQL type of the specified column.
+/// </summary>
+/// <typeparam name="TEntity">The class where we need to look for the column type.</typeparam>
+/// <param name="column">The column that we want to search for.</param>
+/// <returns>Return string value of the Cassandra CQL type.</returns>
+string GetColumnType<TEntity>([NotNull]string column)
+    where TEntity : class;
 ```
 
 #### Extensions

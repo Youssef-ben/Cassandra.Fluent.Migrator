@@ -21,5 +21,7 @@
         internal const string CAN_NOT_RENAME_NONE_PRIMARY_KEY = "The [{0}] is not a primary key. You can only rename primary keys!";
 
         internal const string COLUMN_EXISTS_FOR_RENAME = "Cannot rename column {0} to {1} in keyspace {2}, another column with the same name already exist!";
+
+        internal const string OBJECT_NOT_FOUND = "The {0} [{1}], was not found in the specified Cassandra keyspace [{2}]!";
     }
 }
