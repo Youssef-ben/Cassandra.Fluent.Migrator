@@ -1,3 +1,5 @@
+# Example (Should be Deleted and added in a getting started doc)
+
 ```CSharp
 // Should Check for Schema Agreement before going to next statement
 public class AddFieldsToTableXXXX: IMigrator{
