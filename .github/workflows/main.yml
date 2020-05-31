@@ -30,9 +30,9 @@ jobs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.100'
-    - uses: fabasoad/setup-cassandra-action@v1.0.0
+    - uses: fabasoad/setup-cassandra-action@v1.0.1
       with:
-        host: '192.13.131.0'
+        host: '127.0.0.1'
         port: 9042
         username: Cassandra
         password: Cassandra
