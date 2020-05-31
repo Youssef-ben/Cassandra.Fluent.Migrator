@@ -24,21 +24,26 @@ jobs:
   test:
     needs: build
     runs-on: ubuntu-latest
-        
+    
+    container:
+      image: mcr.microsoft.com/dotnet/core/sdk:3.1
+    
+    services:
+      cfm-cassandra:
+        image: cassandra:latest
+        env:
+          CASSANDRA_CLUSTER_NAME: cfm-cluster
+        ports:
+        - 9042:9042
+
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.100'
-    - uses: fabasoad/setup-cassandra-action@v1.0.1
-      with:
-        host: '127.0.0.1'
-        port: 9042
-        username: Cassandra
-        password: Cassandra
-        connect-timeout: 30
-        keyspace: test
-        scripts_path: './scripts'
-    
+
+    - name: Get Docker IP
+      run: docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' cfm-cassandra
+      
     - name: Run tests
       run: dotnet test
