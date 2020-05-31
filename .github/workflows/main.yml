@@ -30,15 +30,15 @@ jobs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.100'
-
-    - name: Run build
-      run: dotnet build
-    
-    - name: Run Cassandra Docker
-      run: docker run --name cfm-database -e CASSANDRA_CLUSTER_NAME=cfm-cluster -p 9042:9042 -d cassandra:latest
-    
-    - name: Get Docker IP
-      run: docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' cfm-database
+    - uses: fabasoad/setup-cassandra-action@v1.0.0
+      with:
+        host: '192.13.131.0'
+        port: 9042
+        username: Cassandra
+        password: Cassandra
+        connect-timeout: 30
+        keyspace: test
+        scripts_path: './scripts'
     
     - name: Run tests
       run: dotnet test
