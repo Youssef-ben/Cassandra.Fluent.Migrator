@@ -4,7 +4,7 @@ restore: ## Restore the project dependencies.
 	@echo "Restoring the project dependencies...."
 	@dotnet restore
 
-build: restore ## Restore then Build the project.
+build: clean-build restore ## Restore then Build the project.
 	@echo "Building the project...."
 	@dotnet build
 
