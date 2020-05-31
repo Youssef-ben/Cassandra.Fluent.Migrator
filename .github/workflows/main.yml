@@ -22,6 +22,7 @@ jobs:
       run: dotnet build
 
   test:
+    needs: build
     runs-on: ubuntu-latest
         
     steps:
@@ -32,6 +33,9 @@ jobs:
 
     - name: Run build
       run: dotnet build
-
+    
+    - name: Run Cassandra Docker
+      run: docker run --name cfm-database -e CASSANDRA_CLUSTER_NAME=cfm-cluster -p 9042:9042 -d cassandra:latest
+    
     - name: Run tests
       run: dotnet test
