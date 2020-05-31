@@ -1,6 +1,6 @@
 ﻿namespace Cassandra.Fluent.Migrator.Utils.Constants
 {
-    public class UdtCqlStatements
+    internal class UdtCqlStatements
     {
         internal const string TYPE_CREATE_STATEMENT = "CREATE TYPE IF NOT EXISTS {0} ( ";
 

@@ -12,9 +12,12 @@ clean-build: ## Clean the project Build.
 	@echo "cleanning the project...."
 	@rm -rf ./Cassandra.Fluent.Migrator/bin/
 	@rm -rf ./Cassandra.Fluent.Migrator/obj/
+	@rm -rf ./Cassandra.Fluent.Migrator.Tests/bin/
+	@rm -rf ./Cassandra.Fluent.Migrator.Tests/obj/
 
-test: build ## Run the library tests.
+test: ## Run the library tests.
 	@echo "Testing the library..."
+	dotnet test
 
 package: build test ## Create NuGet package.
 	@echo "Packaging the library..."

@@ -76,11 +76,14 @@
         /// Load the appsettings Configuration file in memory.
         /// </summary>
         /// <returns>Appsettings Configuration.</returns>
-        private static IConfiguration LoadConfiguration() => new ConfigurationBuilder()
+        private static IConfiguration LoadConfiguration()
+        {
+            return new ConfigurationBuilder()
             .AddJsonFile("settings/appsettings.json", false)
             .AddJsonFile("settings/appsettings.local.json", optional: true)
             .AddJsonFile("settings/appsettings.development.json", optional: true)
             .AddJsonFile("settings/appsettings.tests.json", optional: true)
             .Build();
+        }
     }
 }

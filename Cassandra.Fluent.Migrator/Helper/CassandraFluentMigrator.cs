@@ -34,7 +34,7 @@
 
         public bool DoesTableExists([NotNull]string table)
         {
-            Check.NotEmptyNotNull(table);
+            Check.NotEmptyNotNull(table, $"The argument [{nameof(table)}]");
 
             return this.cassandraSession
                 .Cluster
@@ -45,7 +45,7 @@
 
         public bool DoesColumnExists([NotNull]string table, [NotNull]string column)
         {
-            Check.NotEmptyNotNull(column);
+            Check.NotEmptyNotNull(column, $"The argument [{nameof(column)}]");
 
             if (!this.DoesTableExists(table))
             {
@@ -63,7 +63,7 @@
 
         public bool DoesUdtExists([NotNull]string udt)
         {
-            Check.NotEmptyNotNull(udt);
+            Check.NotEmptyNotNull(udt, $"The argument [{nameof(udt)}]");
 
             var result = this.cassandraSession
                 .Cluster
@@ -75,7 +75,7 @@
 
         public bool DoesUdtColumnExists([NotNull]string udt, [NotNull]string column)
         {
-            Check.NotEmptyNotNull(column);
+            Check.NotEmptyNotNull(column, $"The argument [{nameof(column)}]");
 
             if (!this.DoesUdtExists(udt))
             {
@@ -93,7 +93,7 @@
 
         public bool DoesMaterializedViewExists([NotNull]string view)
         {
-            Check.NotEmptyNotNull(view);
+            Check.NotEmptyNotNull(view, $"The argument [{nameof(view)}]");
 
             var result = this.cassandraSession
                 .Cluster
@@ -105,7 +105,7 @@
 
         public bool DoesMaterializedViewColumnExists([NotNull]string view, [NotNull] string column)
         {
-            Check.NotEmptyNotNull(column);
+            Check.NotEmptyNotNull(column, $"The argument [{nameof(column)}]");
 
             if (!this.DoesMaterializedViewExists(view))
             {
@@ -123,7 +123,7 @@
 
         public string GetCqlType([NotNull]Type type)
         {
-            Check.NotNull(type);
+            Check.NotNull(type, $"The argument [{nameof(type)}]");
 
             return type.GetCqlType();
         }
@@ -131,9 +131,9 @@
         public string GetColumnType<TEntity>([NotNull]string column)
             where TEntity : class
         {
-            Check.NotEmptyNotNull(column);
+            Check.NotEmptyNotNull(column, $"The argument [{nameof(column)}]");
 
-            return typeof(TEntity).GetCqlType();
+            return typeof(TEntity).GetCqlType(column);
         }
     }
 }

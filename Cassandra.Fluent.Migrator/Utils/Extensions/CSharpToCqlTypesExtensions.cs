@@ -6,9 +6,10 @@
     using Cassandra.Data.Linq;
     using Cassandra.Fluent.Migrator.Utils.Constants;
     using Cassandra.Fluent.Migrator.Utils.Enums;
+    using Cassandra.Fluent.Migrator.Utils.Exceptions;
     using Microsoft.Rest.ClientRuntime.Azure.Authentication.Utilities;
 
-    public static class CSharpToCqlTypesExtensions
+    internal static class CSharpToCqlTypesExtensions
     {
         /// <summary>
         /// Gets the equivalente CQL type of the supplied CSharp type.
@@ -19,7 +20,7 @@
         /// <exception cref="NullReferenceException">Thrown when the specified type is invalid or null.</exception>
         internal static string GetCqlType([NotNull]this Type self)
         {
-            Check.NotNull(self);
+            Check.NotNull(self, $"The argument [type]");
 
             return self.ConvertToCQLType();
         }
@@ -27,31 +28,15 @@
         /// <summary>
         /// Gets the equivalente CQL type from the Specified type column.
         /// </summary>
-        /// <typeparam name="TEntity">The Class that represent the table/User-Defined type in cassandra.</typeparam>
         /// <param name="self">Cassandra Table/UserDefined-type.</param>
         /// <param name="column">Column name.</param>
         /// <returns>CQL type.</returns>
         /// <exception cref="NullReferenceException">Thrown when the Column is not found in the specified object.</exception>
-        internal static string GetCqlType<TEntity>([NotNull]this TEntity self, [NotNull]string column)
-            where TEntity : class
+        internal static string GetCqlType([NotNull]this Type self, [NotNull]string column)
         {
-            return GetCqlTypeFromColumn(self.GetType(), column);
-        }
+            Check.NotNull(self, $"The argument [type]");
 
-        /// <summary>
-        /// ets the equivalente CQL type from the Specified table column.
-        /// </summary>
-        /// <typeparam name="TEntity">The Class that represent the table in cassandra.</typeparam>
-        /// <param name="self">Cassandra Table.</param>
-        /// <param name="column">Column name.</param>
-        /// <returns>CQL type.</returns>
-        /// <exception cref="NullReferenceException">Thrown when the Column is not found in the specified object.</exception>
-        internal static string GetCqlType<TEntity>([NotNull]this Table<TEntity> self, [NotNull]string column)
-            where TEntity : class
-        {
-            Check.NotNull(self);
-
-            return GetCqlTypeFromColumn(typeof(TEntity), column);
+            return GetCqlTypeFromColumn(self, column);
         }
 
         /// <summary>
@@ -63,8 +48,8 @@
         /// <exception cref="NullReferenceException">Thrown when the Column is not found in the specified object.</exception>
         private static string GetCqlTypeFromColumn([NotNull]Type type, [NotNull]string column)
         {
-            Check.NotNull(type);
-            Check.NotEmptyNotNull(column);
+            Check.NotNull(type, $"The argument [{nameof(type)}]");
+            Check.NotEmptyNotNull(column, $"The argument [{nameof(column)}]");
 
             var instance = type.GetProperties()
                     .Select(prop => prop)
@@ -73,7 +58,7 @@
 
             if (instance is null)
             {
-                throw new NullReferenceException(AppErrorsMessages.NULL_REFERENCE.NormalizeString(column, type.Name.NormalizeString()));
+                throw new ObjectNotFoundException(AppErrorsMessages.NULL_REFERENCE.NormalizeString(column, type.Name.NormalizeString()));
             }
 
             return instance.ConvertToCQLType();
@@ -97,7 +82,7 @@
         /// <exception cref="NotSupportedException">Thrown when the type passed is not supported or found.</exception>
         private static string ConvertToCQLType([NotNull]this Type self, TryConvertionAction tryAction = TryConvertionAction.SYSTEM_TYPES)
         {
-            Check.NotNull(self);
+            Check.NotNull(self, $"The argument [type]");
 
             var value = tryAction switch
             {
@@ -110,8 +95,7 @@
             // If the value is empty try the next converting action.
             if (string.IsNullOrWhiteSpace(value) || ColumnTypeCode.List.NormalizeString().Equals(value.NormalizeString()))
             {
-                var index = (int)tryAction++;
-                value = self.ConvertToCQLType((TryConvertionAction)index);
+                value = self.ConvertToCQLType(++tryAction);
             }
 
             return value;
@@ -124,7 +108,7 @@
         /// <returns>The CQL type.</returns>
         private static string TryConvertToSystem([NotNull]this Type self)
         {
-            Check.NotNull(self);
+            Check.NotNull(self, $"The argument [type]");
 
             var name = self.Name.NormalizeString().Replace("`1", string.Empty);
             CSharpToCqlTypes.TypesMapping.TryGetValue(name, out string value);
@@ -139,7 +123,7 @@
         /// <returns>The CQL type.</returns>
         private static string TryConvertToList([NotNull] this Type self)
         {
-            Check.NotNull(self);
+            Check.NotNull(self, $"The argument [type]");
 
             switch (self.Name.NormalizeString().Replace("`1", string.Empty))
             {
@@ -185,7 +169,7 @@
         /// <returns>The CQL type.</returns>
         private static string TryConvertToUserDefinedType([NotNull]this Type self)
         {
-            Check.NotNull(self);
+            Check.NotNull(self, $"The argument [type]");
 
             var genericType = self.Name.NormalizeString();
 
