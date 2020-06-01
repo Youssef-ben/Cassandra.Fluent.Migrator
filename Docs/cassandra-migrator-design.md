@@ -240,24 +240,39 @@ string GetColumnType<TEntity>([NotNull]string column)
 * `Tables:` Set of methods to handle the [Creation/Alter/Rename/Delete] of a table columns.
 
 ```CSharp
-/*
-* Add a Column if not exists to the table. Otherwise it does nothing.
-* Note :
-*    - If the {Type: [Null || Empty]} the function will get the type from the {Entity} directly.
-*/
-AddColumnAsync("table", "field", ["Type"]);
 
-/*
-* Alter the type of the Column if exists. Otherwise it does nothing.
-* Note :
-*    - If the {Type: [Null || Empty]} the function will get the type from the {Entity} directly.
-*/
-AlterColumnAsync("table", "field", ["Type"]);
+/// <summary>
+/// Adds the specified column to the targeted table only if the column doesn't exists.
+/// </summary>
+///
+/// <param name="self">The instance of the Cassandra Fluent Migratr helper.</param>
+/// <param name="table">The table to which we want to add the new column.</param>
+/// <param name="column">The new column.</param>
+/// <param name="type">The new column type.</param>
+/// <returns>The instance of the Cassandra Fluent Migrator helper.</returns>
+///
+/// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
+/// <exception cref="ObjectNotFoundException">Thrown when the table doesn't exists.</exception>
+Task<ICassandraFluentMigrator> AddColumnAsync(string table, string column, Type type);
+Task<ICassandraFluentMigrator> AddColumnAsync<TTableClass>(string table, string column);
 
-/*
-* Rename the Column if exists. Otherwise it does nothing.
-*/
-RenameColumnAsync("table", "old", "new");
+// IMPORTANT: Alter Column is no longer supported in Cassandra v3.x
+Task<ICassandraFluentMigrator> AlterColumnAsync("table", "field", ["Type"]);
+
+/// <summary>
+/// Rename the specified column in the targeted table only if the column exists.
+/// <para>IMPORTANT: In Cassandra only the Primary key can be renamed.</para>
+/// </summary>
+///
+/// <typeparam name="Table">The Table where we should look for the column type.</typeparam>
+/// <param name="self">Cassandra Table.</param>
+/// <param name="table">The table.</param>
+/// <param name="old">The column to be renamed.</param>
+/// <param name="target">The new column name.</param>
+/// <returns>The table Instance.</returns>
+/// <exception cref="ArgumentNullException">Thrown when one of the arguments is null or empty.</exception>
+/// <exception cref="ApplicationException">Thrown when the Column is not a primary key.</exception>
+Task<ICassandraFluentMigrator> RenamePrimaryColumnAsync(this ICassandraFluentMigrator self, string table, string old, string target);
 
 /*
 * Delete the Column if exists. Otherwise it does nothing.
