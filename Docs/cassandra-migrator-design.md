@@ -154,6 +154,7 @@ Table<TEntity> GetTable<TEntity>()
 /// </summary>
 /// <param name="table">The table we need to search for.</param>
 /// <returns>True, if exists. False otherwise.</returns>
+///
 /// <exception cref="NullReferenceException">Thrown when the table value is null or empty.</exception>
 bool DoesTableExists([NotNull]string table);
 
@@ -168,6 +169,7 @@ bool DoesTableExists([NotNull]string table);
 /// <param name="table">The table we want to search.</param>
 /// <param name="column">The column that we want to search for.</param>
 /// <returns>True, if exists. False, Otherwise.</returns>
+///
 /// <exception cref="NullReferenceException">Thrown when the table or column value is null or empty.</exception>
 /// <exception cref="ObjectNotFoundException">Thrown when the table isn't available in the current casasndra session.</exception>
 bool DoesColumnExists([NotNull]string table, [NotNull]string column);
@@ -177,6 +179,7 @@ bool DoesColumnExists([NotNull]string table, [NotNull]string column);
 /// </summary>
 /// <param name="udt">The User-Defined type that we need to search for.</param>
 /// <returns>True, if exists. False otherwise.</returns>
+///
 /// <exception cref="NullReferenceException">Thrown when the User-Defined type value is null or empty.</exception>
 bool DoesUdtExists([NotNull]string udt);
 
@@ -191,6 +194,7 @@ bool DoesUdtExists([NotNull]string udt);
 /// <param name="udt">The User-Defined type we want to search.</param>
 /// <param name="column">The column that we want to search for.</param>
 /// <returns>True, if exists. False otherwise.</returns>
+///
 /// <exception cref="NullReferenceException">Thrown when the User-Defined type or column value is null or empty.</exception>
 /// <exception cref="ObjectNotFoundException">Thrown when the User-Defined type isn't available in the current casasndra session.</exception>
 bool DoesUdtColumnExists([NotNull]string udt, [NotNull]string column);
@@ -200,6 +204,7 @@ bool DoesUdtColumnExists([NotNull]string udt, [NotNull]string column);
 /// </summary>
 /// <param name="view">The Materialized view that we need to search for.</param>
 /// <returns>True, if exists. False otherwise.</returns>
+///
 /// <exception cref="NullReferenceException">Thrown when the Materialized view value is null or empty.</exception>
 bool DoesMaterializedViewExists([NotNull]string view);
 
@@ -214,6 +219,7 @@ bool DoesMaterializedViewExists([NotNull]string view);
 /// <param name="view">The Materialized view. we want to search.</param>
 /// <param name="column">The column that we want to search for.</param>
 /// <returns>True, if exists. False otherwise.</returns>
+///
 /// <exception cref="NullReferenceException">Thrown when the Materialized view or the column value is null or empty.</exception>
 /// <exception cref="ObjectNotFoundException">Thrown when the Materialized view isn't available in the current casasndra session.</exception>
 bool DoesMaterializedViewColumnExists([NotNull]string view, [NotNull] string column);
@@ -240,7 +246,6 @@ string GetColumnType<TEntity>([NotNull]string column)
 * `Tables:` Set of methods to handle the [Creation/Alter/Rename/Delete] of a table columns.
 
 ```CSharp
-
 /// <summary>
 /// Adds the specified column to the targeted table only if the column doesn't exists.
 /// </summary>
@@ -256,9 +261,6 @@ string GetColumnType<TEntity>([NotNull]string column)
 Task<ICassandraFluentMigrator> AddColumnAsync(string table, string column, Type type);
 Task<ICassandraFluentMigrator> AddColumnAsync<TTableClass>(string table, string column);
 
-// IMPORTANT: Alter Column is no longer supported in Cassandra v3.x
-Task<ICassandraFluentMigrator> AlterColumnAsync("table", "field", ["Type"]);
-
 /// <summary>
 /// Rename the specified column in the targeted table only if the column exists.
 /// <para>IMPORTANT: In Cassandra only the Primary key can be renamed.</para>
@@ -270,14 +272,27 @@ Task<ICassandraFluentMigrator> AlterColumnAsync("table", "field", ["Type"]);
 /// <param name="old">The column to be renamed.</param>
 /// <param name="target">The new column name.</param>
 /// <returns>The table Instance.</returns>
+///
 /// <exception cref="ArgumentNullException">Thrown when one of the arguments is null or empty.</exception>
 /// <exception cref="ApplicationException">Thrown when the Column is not a primary key.</exception>
 Task<ICassandraFluentMigrator> RenamePrimaryColumnAsync(this ICassandraFluentMigrator self, string table, string old, string target);
 
-/*
-* Delete the Column if exists. Otherwise it does nothing.
-*/
-DeleteColumnAsync("table", "field");
+/// <summary>
+/// Drops the specified column from the targeted table only if the column exists.
+/// </summary>
+///
+/// <param name="self">The instance of the Cassandra Fluent Migrator helper.</param>
+/// <param name="table">The table from which we want to delete the column.</param>
+/// <param name="column">The column to be deleted.</param>
+/// <returns>The table Instance.</returns>
+///
+/// <exception cref="ArgumentNullException">Thrown when one of the arguments is null or empty.</exception>
+/// <exception cref="ObjectNotFoundException">Thrown when the table doesn't exists.</exception>
+Task<ICassandraFluentMigrator> DropColumnAsync(this ICassandraFluentMigrator self, [NotNull]string table, [NotNull]string column);
+
+
+// IMPORTANT: Alter Column is no longer supported in Cassandra v3.x
+Task<ICassandraFluentMigrator> AlterColumnAsync("table", "field", ["Type"]);
 ```
 
 * `User Defined Types:` Sets of methods to handle the [Creation/Alter/Rename/Delete] of a User-Defined Type.

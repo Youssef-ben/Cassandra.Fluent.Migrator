@@ -77,7 +77,8 @@
         ///
         /// <exception cref="ArgumentNullException">Thrown when one of the arguments is null or empty.</exception>
         /// <exception cref="InvalidOperationException">Thrown when the Column is not a primary key.</exception>
-        public static async Task<ICassandraFluentMigrator> RenamePrimaryColumnAsync(this ICassandraFluentMigrator self, string table, string old, string target)
+        /// <exception cref="ObjectNotFoundException">Thrown when the table doesn't exists.</exception>
+        public static async Task<ICassandraFluentMigrator> RenamePrimaryColumnAsync([NotNull]this ICassandraFluentMigrator self, [NotNull]string table, [NotNull]string old, [NotNull]string target)
         {
             // Validate the parameters.
             Check.NotNull(self, $"The argument [cassandra fluent migrator object]");
@@ -105,7 +106,39 @@
             return await self.ExecuteRenameColumnQueryAsync(table, old, target);
         }
 
-        private static async Task<ICassandraFluentMigrator> ExecuteAddColumnAsync(this ICassandraFluentMigrator self, string table, string column, string type)
+        /// <summary>
+        /// Drops the specified column from the targeted table only if the column exists.
+        /// </summary>
+        ///
+        /// <param name="self">The instance of the Cassandra Fluent Migrator helper.</param>
+        /// <param name="table">The table from which we want to delete the column.</param>
+        /// <param name="column">The column to be deleted.</param>
+        /// <returns>The table Instance.</returns>
+        ///
+        /// <exception cref="ArgumentNullException">Thrown when one of the arguments is null or empty.</exception>
+        /// <exception cref="ObjectNotFoundException">Thrown when the table doesn't exists.</exception>
+        public static async Task<ICassandraFluentMigrator> DropColumnAsync(this ICassandraFluentMigrator self, [NotNull]string table, [NotNull]string column)
+        {
+            // Validate the parameters.
+            Check.NotNull(self, $"The argument [cassandra fluent migrator object]");
+            Check.NotEmptyNotNull(table, $"The argument [{nameof(table)}]");
+            Check.NotEmptyNotNull(column, $"The argument [{nameof(column)}]");
+
+            // Normalize the values.
+            table = table.NormalizeString();
+            column = column.NormalizeString();
+
+            // Check if the table exists and the column exists.
+            if (!self.DoesColumnExists(table, column))
+            {
+                return self;
+            }
+
+            // Delete Column.
+            return await self.ExecuteDropColumnQueryAsync(table, column);
+        }
+
+        private static async Task<ICassandraFluentMigrator> ExecuteAddColumnAsync([NotNull]this ICassandraFluentMigrator self, [NotNull]string table, [NotNull] string column, [NotNull]string type)
         {
             // Normalize the Strings.
             table = table.NormalizeString();

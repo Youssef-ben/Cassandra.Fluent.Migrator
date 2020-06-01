@@ -5,6 +5,7 @@
     using Cassandra.Fluent.Migrator.Helper.Extensions;
     using Cassandra.Fluent.Migrator.Tests.Configuration;
     using Cassandra.Fluent.Migrator.Tests.Models;
+    using Cassandra.Fluent.Migrator.Utils.Exceptions;
     using Xunit;
     using Xunit.Priority;
 
@@ -73,6 +74,27 @@
             catch (InvalidOperationException ex)
             {
                 Assert.Contains("the [values] is not a primary key. you can only rename primary keys!".ToLower(), ex.Message.ToLower());
+            }
+        }
+
+        [Fact]
+        [Priority(5)]
+        public async void DeleteColumn_Success()
+        {
+            await this.cfmHelper.DropColumnAsync(nameof(CfmHelperObject), "AddedColumnFromTestwithoutType");
+        }
+
+        [Fact]
+        [Priority(5)]
+        public async void DeleteColumn_Failed()
+        {
+            try
+            {
+                await this.cfmHelper.DropColumnAsync("TableDoesntExists", "AddedColumnFromTestwithoutType");
+            }
+            catch (ObjectNotFoundException ex)
+            {
+                Assert.Contains("the table [tabledoesntexists], was not found in the specified cassandra keyspace [tables_aed8344d_2a09_44f4_aa0d_f1b6ead51c6a]!".ToLower(), ex.Message.ToLower());
             }
         }
 
