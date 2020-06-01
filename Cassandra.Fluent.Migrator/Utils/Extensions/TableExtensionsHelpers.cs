@@ -38,12 +38,12 @@
         /// Build the Reanme Column Query statement and execute it.
         /// </summary>
         ///
-        /// <param name="self">Cassandra Table.</param>
+        /// <param name="self">The Cassandra Fluent Migrator.</param>
         /// <param name="table">The Cassandra table name.</param>
         /// <param name="oldColumn">Old Column to rename.</param>
         /// <param name="targetName">New Column name.</param>
         /// <returns>Nothing.</returns>
-        internal static async Task<ICassandraFluentMigrator> ExecuteRenameColumnQueryAsync([NotNull]this ICassandraFluentMigrator self, string table, string oldColumn, string targetName)
+        internal static async Task<ICassandraFluentMigrator> ExecuteRenameColumnQueryAsync([NotNull]this ICassandraFluentMigrator self, [NotNull]string table, [NotNull]string oldColumn, [NotNull]string targetName)
         {
             Check.NotNull(self, $"The argument [cassandra fluent migrator object]");
             Check.NotEmptyNotNull(table, $"The argument [table]");
@@ -60,6 +60,25 @@
         }
 
         /// <summary>
+        /// Build the Drop Column Query statement and execute it.
+        /// </summary>
+        ///
+        /// <param name="self">The Cassandra Fluent Migrator.</param>
+        /// <param name="table">The Cassandra table name.</param>
+        /// <param name="column">The Column to be deleted.</param>
+        /// <returns>Nothing.</returns>
+        internal static async Task<ICassandraFluentMigrator> ExecuteDropColumnQueryAsync([NotNull]this ICassandraFluentMigrator self, [NotNull]string table, [NotNull]string column)
+        {
+            Check.NotNull(self, $"The argument [cassandra fluent migrator object]");
+            Check.NotEmptyNotNull(table, $"The argument [{nameof(table)}]");
+            Check.NotEmptyNotNull(column, $"The argument [{nameof(column)}]");
+
+            var query = TableCqlStatements.TABLE_DROP_COLUMN_STATEMENT.NormalizeString(table, column);
+
+            return await self.ExecuteStatementAsync(query, AppErrorsMessages.COLUMN_NOT_FOUND.NormalizeString(column, table));
+        }
+
+        /// <summary>
         /// Check if the specified column is a [PrimaryKey].
         /// </summary>
         ///
@@ -67,8 +86,9 @@
         /// <param name="table">The Cassandra table name.</param>
         /// <param name="column">The Column to check.</param>
         /// <returns>True if Primary, False Otherwise.</returns>
+        ///
         /// <exception cref="ApplicationException">Thrown when the Column is not a primary key.</exception>
-        internal static bool IsPrimaryKey([NotNull]this ICassandraFluentMigrator self, [NotNull]string table, [NotNull] string column)
+        internal static bool IsPrimaryKey([NotNull]this ICassandraFluentMigrator self, [NotNull]string table, [NotNull]string column)
         {
             Check.NotNull(self, $"The argument [cassandra fluent migrator object]");
             Check.NotEmptyNotNull(table, $"The argument [table]");
