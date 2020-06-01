@@ -1,4 +1,4 @@
-﻿namespace Cassandra.Fluent.Migrator.Tests
+﻿namespace Cassandra.Fluent.Migrator.Tests.CassandraFluentMigrator
 {
     using System;
     using Cassandra.Fluent.Migrator.Helper;
@@ -9,22 +9,22 @@
     using Xunit.Priority;
 
     [TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)]
-    public class CassandraFluentMigratorTests
+    public class CfmBaseMethodsTests
     {
         private const string TABLE_NOT_FOUND = "the table [{0}], not found in the specified cassandra keyspace [{1}]!";
         private const string COLUMN_NOT_FOUND = "the field [{0}] was not found in the specified type [{1}]. add the field in the object or check the field spelling!";
         private const string INVALID_OR_EMPTY_ARGUMENT = "The argument [{0}] provided is either Null or Empty string";
         private const string INVALID_ARGUMENT = "The argument [{0}] provided is null";
+        private const string KEYSPACE = "base_740ee67a_4718_4117_8d3d_6f50c6343f48";
 
-        private readonly string keyspace = "740ee67a_4718_4117_8d3d_6f50c6343f48";
         private readonly ISession session;
         private readonly ICassandraFluentMigrator cfmHelper;
 
-        public CassandraFluentMigratorTests()
+        public CfmBaseMethodsTests()
         {
             if (this.session is null)
             {
-                this.session = this.GetCassandraSession(this.keyspace);
+                this.session = this.GetCassandraSession(KEYSPACE);
                 this.cfmHelper = new CassandraFluentMigrator(this.session);
             }
         }
@@ -91,7 +91,7 @@
             }
             catch (ObjectNotFoundException ex)
             {
-                var expected = string.Format(TABLE_NOT_FOUND, "DoesntExists", this.keyspace).ToLower();
+                var expected = string.Format(TABLE_NOT_FOUND, "DoesntExists", KEYSPACE).ToLower();
                 Assert.Contains(expected, ex.Message.ToLower());
             }
         }
@@ -174,7 +174,7 @@
         [Priority(100)]
         public async void DeleteKeyspace_and_ShutdownTheSession()
         {
-            this.session.DeleteKeyspaceIfExists(this.keyspace);
+            this.session.DeleteKeyspaceIfExists(KEYSPACE);
 
             await this.session.ShutdownAsync();
         }

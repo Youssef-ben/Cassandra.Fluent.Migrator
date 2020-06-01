@@ -22,7 +22,7 @@
         {
             Check.NotNull(self, $"The argument [type]");
 
-            return self.ConvertToCQLType();
+            return self.ConvertToCQLType().NormalizeString();
         }
 
         /// <summary>
@@ -36,7 +36,7 @@
         {
             Check.NotNull(self, $"The argument [type]");
 
-            return GetCqlTypeFromColumn(self, column);
+            return GetCqlTypeFromColumn(self, column).NormalizeString();
         }
 
         /// <summary>

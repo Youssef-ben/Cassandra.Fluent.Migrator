@@ -8,5 +8,7 @@
         public int Id { get; set; }
 
         public string Values { get; set; }
+
+        public bool AddedColumnFromTestwithoutType { get; set; }
     }
 }
