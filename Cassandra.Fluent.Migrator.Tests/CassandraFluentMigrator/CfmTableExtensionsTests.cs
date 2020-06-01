@@ -1,5 +1,6 @@
 ﻿namespace Cassandra.Fluent.Migrator.Tests.CassandraFluentMigrator
 {
+    using System;
     using Cassandra.Fluent.Migrator.Helper;
     using Cassandra.Fluent.Migrator.Helper.Extensions;
     using Cassandra.Fluent.Migrator.Tests.Configuration;
@@ -29,7 +30,7 @@
         public async void Initialize()
         {
             // Ensure that the Table we want to create exists.
-            IStatement statement = new SimpleStatement("CREATE TABLE IF NOT EXISTS CfmHelperObject(id int, values text, PRIMARY KEY (id))");
+            IStatement statement = new SimpleStatement($"CREATE TABLE IF NOT EXISTS {nameof(CfmHelperObject)}(id int, values text, PRIMARY KEY (id))");
             await this.session.ExecuteAsync(statement);
         }
 
@@ -37,14 +38,42 @@
         [Priority(1)]
         public async void AddColumn_TypeSpecified_Success()
         {
-            await this.cfmHelper.AddColumnAsync("CfmHelperObject", "AddedColumnFromTest", typeof(string));
+            await this.cfmHelper.AddColumnAsync(nameof(CfmHelperObject), "AddedColumnFromTest", typeof(string));
         }
 
         [Fact]
         [Priority(1)]
         public async void AddColumn_TypeNotSpecified_Success()
         {
-            await this.cfmHelper.AddColumnAsync<CfmHelperObject>("AddedColumnFromTestwithoutType");
+            await this.cfmHelper.AddColumnAsync<CfmHelperObject>(nameof(CfmHelperObject), "AddedColumnFromTestwithoutType");
+        }
+
+        [Fact]
+        [Priority(2)]
+        public async void RenamePrimaryKey_Success()
+        {
+            await this.cfmHelper.RenamePrimaryColumnAsync(nameof(CfmHelperObject), "id", "renamedId");
+        }
+
+        [Fact]
+        [Priority(3)]
+        public async void RenamePrimaryKey_DoesntExists_Failed()
+        {
+            await this.cfmHelper.RenamePrimaryColumnAsync(nameof(CfmHelperObject), "id", "renamedId");
+        }
+
+        [Fact]
+        [Priority(4)]
+        public async void RenamePrimaryKey_ColumnNotPrimary_Failed()
+        {
+            try
+            {
+                await this.cfmHelper.RenamePrimaryColumnAsync(nameof(CfmHelperObject), "Values", "renamedId");
+            }
+            catch (InvalidOperationException ex)
+            {
+                Assert.Contains("the [values] is not a primary key. you can only rename primary keys!".ToLower(), ex.Message.ToLower());
+            }
         }
 
         [Fact]

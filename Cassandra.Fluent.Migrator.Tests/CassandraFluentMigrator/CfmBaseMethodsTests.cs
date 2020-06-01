@@ -11,7 +11,7 @@
     [TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)]
     public class CfmBaseMethodsTests
     {
-        private const string TABLE_NOT_FOUND = "the table [{0}], not found in the specified cassandra keyspace [{1}]!";
+        private const string TABLE_NOT_FOUND = "the table [{0}], was not found in the specified cassandra keyspace [{1}]!";
         private const string COLUMN_NOT_FOUND = "the field [{0}] was not found in the specified type [{1}]. add the field in the object or check the field spelling!";
         private const string INVALID_OR_EMPTY_ARGUMENT = "The argument [{0}] provided is either Null or Empty string";
         private const string INVALID_ARGUMENT = "The argument [{0}] provided is null";
