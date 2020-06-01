@@ -240,9 +240,6 @@ string GetColumnType<TEntity>([NotNull]string column)
 * `Tables:` Set of methods to handle the [Creation/Alter/Rename/Delete] of a table columns.
 
 ```CSharp
-
-CreateTableAsync("table");
-
 /*
 * Add a Column if not exists to the table. Otherwise it does nothing.
 * Note :

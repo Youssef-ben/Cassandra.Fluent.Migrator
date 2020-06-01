@@ -46,9 +46,19 @@
                 throw new ArgumentNullException(string.Format(argumentNullExceptionMessage, "Default Keyspace"));
             }
 
-            if (self.Replication is null || string.IsNullOrWhiteSpace(self.Replication["class"]) || string.IsNullOrWhiteSpace(self.Replication["datacenter"]))
+            if (self.Replication is null || string.IsNullOrWhiteSpace(self.Replication["class"]))
             {
                 throw new ArgumentNullException(string.Format(argumentNullExceptionMessage, "Replication"));
+            }
+
+            if (self.Replication["class"].ToLower() == "NetworkTopologyStrategy".ToLower() && string.IsNullOrWhiteSpace(self.Replication["datacenter"]))
+            {
+                throw new ArgumentNullException(string.Format(argumentNullExceptionMessage, "Replication: datacenter"));
+            }
+
+            if (self.Replication["class"].ToLower() == "SimpleStrategy".ToLower() && string.IsNullOrWhiteSpace(self.Replication["replication_factor"]))
+            {
+                throw new ArgumentNullException(string.Format(argumentNullExceptionMessage, "Replication: replication_factor"));
             }
 
             if (self.Query is null || self.Query.HeartBeat == 0)

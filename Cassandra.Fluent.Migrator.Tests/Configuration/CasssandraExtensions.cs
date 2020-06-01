@@ -37,6 +37,15 @@
             var consistentyQueryOption = new QueryOptions().SetConsistencyLevel((ConsistencyLevel)self.Query.ConsistencyLevel);
             var heartbeat = new PoolingOptions().SetHeartBeatInterval(self.Query.HeartBeat);
 
+            if (self.Replication["class"].ToLower() == "SimpleStrategy".ToLower())
+            {
+                self.Replication.Remove("datacenter");
+            }
+            else if (self.Replication["class"].ToLower() == "NetworkTopologyStrategy".ToLower())
+            {
+                self.Replication.Remove("replication_factor");
+            }
+
             return Cluster.Builder()
                .AddContactPoints(self.ContactPoints)
                .WithPort(self.Port)
