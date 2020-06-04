@@ -12,8 +12,9 @@
         /// <returns>New Instance of the Cassandra settings.</returns>
         public static CassandraSettings GetConfiguration()
         {
+            var sectionName = nameof(CassandraSettings).Replace("Settings", string.Empty);
             return LoadConfiguration()
-                .GetConfigInstance(nameof(CassandraSettings).Replace("Settings", string.Empty))
+                .GetConfigInstance(sectionName)
                 .ValidateConfiguration();
         }
 
