@@ -351,26 +351,32 @@ Task<ICassandraFluentMigrator> DeleteUserDefinedTypeAsync<TEntity>([NotNull]this
 /// <returns>The Cassandra CQL query.</returns>
 ///
 /// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
-/// <exception cref="ObjectNotFoundException">Thrown when the table doesn't exists.</exception>
+/// <exception cref="ObjectNotFoundException">Thrown when the udt doesn't exists.</exception>
 Task<ICassandraFluentMigrator> AlterUdtAddColumnAsync([NotNull]this ICassandraFluentMigrator self, [NotNull]string udt, string column, Type type);
 Task<ICassandraFluentMigrator> AlterUdtAddColumnAsync<TEntity>([NotNull]this ICassandraFluentMigrator self, [NotNull]string udt, string column);
 
-/*
-* Alter Udt Column if Exists. Otherwise it does nothing.
-* Note :
-*    - If the [Type: {Null || Empty}] the function will take the Type from the Entity.
-*/
-AlterUdtAlterColumnAsync("udt", "field", ["Type"]);
+/// <summary>
+/// Alter the specified User-Defined type by renaming the column name by the target name.
+/// In case the target name exists the method throws an exception.
+/// </summary>
+///
+/// <param name="self">The Cassandra Fluent Migrator.</param>
+/// <param name="udt">The name of the User-Defined type.</param>
+/// <param name="column">The name of the column to be renamed.</param>
+/// <param name="target">The new column name.</param>
+/// <returns>The Cassandra Fluent Migrator helper.</returns>
+///
+/// <exception cref="ArgumentNullException">Thrown when one of the arguments is null or empty.</exception>
+/// <exception cref="InvalidOperationException">Thrown when the target column name exists.</exception>
+/// <exception cref="ObjectNotFoundException">Thrown when the udt doesn't exists.</exception>
+Task<ICassandraFluentMigrator> AlterUdtRenameColumnAsync([NotNull]this ICassandraFluentMigrator self, [NotNull]string udt, [NotNull]string column, [NotNull]string target);
 
-/*
-* Rename Udt Column if Exists. Otherwise it does nothing.
-*/
-AlterUdtRenameColumnAsync("udt", "old", "new");
 
-/*
-* Delete Udt Column if Exists. Otherwise it does nothing.
-*/
+// IMPORTANT: Cassandra doesn't support Dropping a column of a type.
 AlterUdtDeleteColumnAsync("udt", "field");
+
+// IMPORTANT: Alter Column is no longer supported in Cassandra v3.x
+AlterUdtAlterColumnAsync("udt", "field", ["Type"]);
 ```
 
 * `Materialized View:` Set of methods to handle the [Creation/Alter/Rename/Delete] of a Materialized View.

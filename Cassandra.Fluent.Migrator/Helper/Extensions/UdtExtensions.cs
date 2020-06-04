@@ -3,6 +3,7 @@
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
+    using Cassandra.Fluent.Migrator.Utils.Constants;
     using Cassandra.Fluent.Migrator.Utils.Exceptions;
     using Cassandra.Fluent.Migrator.Utils.Extensions;
     using Microsoft.Rest.ClientRuntime.Azure.Authentication.Utilities;
@@ -85,7 +86,7 @@
         /// <returns>The Cassandra CQL query.</returns>
         ///
         /// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
-        /// <exception cref="ObjectNotFoundException">Thrown when the table doesn't exists.</exception>
+        /// <exception cref="ObjectNotFoundException">Thrown when the udt doesn't exists.</exception>
         public static async Task<ICassandraFluentMigrator> AlterUdtAddColumnAsync([NotNull]this ICassandraFluentMigrator self, [NotNull]string udt, string column, Type type)
         {
             Check.NotNull(self, $"The argument [cassandra fluent migrator]");
@@ -115,7 +116,7 @@
         /// <returns>The Cassandra CQL query.</returns>
         ///
         /// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
-        /// <exception cref="ObjectNotFoundException">Thrown when the table doesn't exists.</exception>
+        /// <exception cref="ObjectNotFoundException">Thrown when the udt doesn't exists.</exception>
         public static async Task<ICassandraFluentMigrator> AlterUdtAddColumnAsync<TEntity>([NotNull]this ICassandraFluentMigrator self, [NotNull]string udt, string column)
             where TEntity : class
         {
@@ -134,6 +135,42 @@
             var typeName = self.GetColumnType<TEntity>(column);
 
             return await self.ExecuteAlterUdtAddColumnQuery(udt, column, typeName);
+        }
+
+        /// <summary>
+        /// Alter the specified User-Defined type by renaming the column name by the target name.
+        /// In case the target name exists the method throws an exception.
+        /// </summary>
+        ///
+        /// <param name="self">The Cassandra Fluent Migrator.</param>
+        /// <param name="udt">The name of the User-Defined type.</param>
+        /// <param name="column">The name of the column to be renamed.</param>
+        /// <param name="target">The new column name.</param>
+        /// <returns>The Cassandra Fluent Migrator helper.</returns>
+        ///
+        /// <exception cref="ArgumentNullException">Thrown when one of the arguments is null or empty.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the target column name exists.</exception>
+        /// <exception cref="ObjectNotFoundException">Thrown when the udt doesn't exists.</exception>
+        public static async Task<ICassandraFluentMigrator> AlterUdtRenameColumnAsync([NotNull]this ICassandraFluentMigrator self, [NotNull]string udt, [NotNull]string column, [NotNull]string target)
+        {
+            Check.NotNull(self, "The argument [Cassandra Fluent Migrator]");
+            Check.NotEmptyNotNull(udt, $"The argument [User-Defined type]");
+            Check.NotEmptyNotNull(column, $"The argument [{nameof(column)}]");
+            Check.NotEmptyNotNull(target, $"The argument [{nameof(target)}]");
+
+            // If the column doesn't exits skip the rename action.
+            if (!self.DoesUdtColumnExists(udt, column))
+            {
+                return self;
+            }
+
+            // If the target name exists, throw an exception.
+            if (self.DoesUdtColumnExists(udt, target))
+            {
+                throw new InvalidOperationException(AppErrorsMessages.TYPE_UDT_COLUMN_EXISTS.NormalizeString(target));
+            }
+
+            return await self.ExecuteAlterUdtRenameColumnQuery(udt, column, target);
         }
     }
 }
