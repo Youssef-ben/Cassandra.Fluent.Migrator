@@ -71,8 +71,6 @@
             Check.NotNull(self, $"The argument [cassandra fluent migrator]");
             Check.NotEmptyNotNull(name, $"The argument [{nameof(name)}]");
 
-            name = name.NormalizeString();
-
             // Build Query.
             var query = UdtCqlStatements.TYPE_DROP_STATEMENT.NormalizeString(name);
 
@@ -93,17 +91,37 @@
         internal static async Task<ICassandraFluentMigrator> ExecuteAlterUdtAddColumnQuery([NotNull]this ICassandraFluentMigrator self, [NotNull]string udt, [NotNull]string column, [NotNull]string type)
         {
             Check.NotNull(self, $"The argument [cassandra fluent migrator]");
-            Check.NotNull(type, $"The argument [{nameof(type)}]");
 
             Check.NotEmptyNotNull(udt, $"The argument [User-Defined type (udt)]");
-            Check.NotNull(column, $"The argument [{nameof(column)}]");
-
-            column = column.NormalizeString();
-            udt = udt.NormalizeString();
-            type = type.NormalizeString();
+            Check.NotEmptyNotNull(type, $"The argument [{nameof(type)}]");
+            Check.NotEmptyNotNull(column, $"The argument [{nameof(column)}]");
 
             var query = UdtCqlStatements.TYPE_ADD_COLUMN_STATEMENT.NormalizeString(udt, column, type);
             return await self.ExecuteUdtStatementAsync(query, AppErrorsMessages.TYPE_UDT_COLUMN_EXISTS.NormalizeString(column));
+        }
+
+        /// <summary>
+        /// Build the Rename Column Query statement for the User-Defined types and execute it.
+        /// </summary>
+        ///
+        /// <param name="self">The Cassandra Fluent Migrator.</param>
+        /// <param name="udt">The name of the User-Defined type.</param>
+        /// <param name="column">The name of the column to be renamed.</param>
+        /// <param name="target">The new column name.</param>
+        /// <returns>The Cassandra CQL query.</returns>
+        ///
+        /// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
+        internal static async Task<ICassandraFluentMigrator> ExecuteAlterUdtRenameColumnQuery([NotNull]this ICassandraFluentMigrator self, [NotNull]string udt, [NotNull]string column, [NotNull]string target)
+        {
+            Check.NotNull(self, $"The argument [cassandra fluent migrator]");
+
+            Check.NotEmptyNotNull(udt, $"The argument [User-Defined type (udt)]");
+            Check.NotEmptyNotNull(column, $"The argument [{nameof(column)}]");
+            Check.NotEmptyNotNull(target, $"The argument [{nameof(target)}]");
+
+            var query = UdtCqlStatements.TYPE_RENAME_COLUMN_STATEMENT.NormalizeString(udt, column, target);
+
+            return await self.ExecuteUdtStatementAsync(query, AppErrorsMessages.TYPE_COLUMN_NOT_FOUND.NormalizeString(column));
         }
 
         private static async Task<ICassandraFluentMigrator> ExecuteUdtStatementAsync([NotNull]this ICassandraFluentMigrator self, [NotNull]string query, [NotNull]string errorMessage = "throw error")

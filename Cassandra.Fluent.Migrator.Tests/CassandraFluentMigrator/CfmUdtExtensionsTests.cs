@@ -1,5 +1,6 @@
 ﻿namespace Cassandra.Fluent.Migrator.Tests.CassandraFluentMigrator
 {
+    using System;
     using Cassandra.Fluent.Migrator.Helper;
     using Cassandra.Fluent.Migrator.Helper.Extensions;
     using Cassandra.Fluent.Migrator.Tests.Configuration;
@@ -17,6 +18,7 @@
     public class CfmUdtExtensionsTests
     {
         private const string UDT_NOT_FOUND = "the User-Defined type [{0}], was not found in the specified cassandra keyspace [{1}]!";
+        private const string CANT_RENAME = "cannot add new field [{0}] to type!";
         private const string KEYSPACE = "udt_f1ddd43b_ad8d_4732_b623_bc65c539f04f";
 
         private readonly ISession session;
@@ -117,6 +119,59 @@
             try
             {
                 await this.cfmHelper.AlterUdtAddColumnAsync("DoesntExists", "Values", typeof(string));
+            }
+            catch (ObjectNotFoundException ex)
+            {
+                var expected = string.Format(UDT_NOT_FOUND, "DoesntExists", KEYSPACE).ToLower();
+                Assert.Contains(expected, ex.Message.ToLower());
+            }
+        }
+
+        [Fact]
+        [Priority(4)]
+        public async void RenameColumn_Success()
+        {
+            var column = "values";
+            var target = "valuesDetails";
+
+            var result = this.cfmHelper.DoesUdtColumnExists(nameof(CfmHelperObject), column);
+            Assert.True(result);
+
+            result = this.cfmHelper.DoesUdtColumnExists(nameof(CfmHelperObject), target);
+            Assert.False(result);
+
+            // Execute
+            await this.cfmHelper.AlterUdtRenameColumnAsync(nameof(CfmHelperObject), column, target);
+
+            result = this.cfmHelper.DoesUdtColumnExists(nameof(CfmHelperObject), column);
+            Assert.False(result);
+
+            result = this.cfmHelper.DoesUdtColumnExists(nameof(CfmHelperObject), target);
+            Assert.True(result);
+        }
+
+        [Fact]
+        [Priority(4)]
+        public async void RenameColumn_TargetColumnExists_Failed()
+        {
+            try
+            {
+                await this.cfmHelper.AlterUdtRenameColumnAsync(nameof(CfmHelperObject), "AddedColumnFromTest", "id");
+            }
+            catch (InvalidOperationException ex)
+            {
+                var expected = string.Format(CANT_RENAME, "id").ToLower();
+                Assert.Contains(expected, ex.Message.ToLower());
+            }
+        }
+
+        [Fact]
+        [Priority(4)]
+        public async void RenameColumn_UdtNotFound_Failed()
+        {
+            try
+            {
+                await this.cfmHelper.AlterUdtRenameColumnAsync("DoesntExists", "Values", "valuesDetails");
             }
             catch (ObjectNotFoundException ex)
             {

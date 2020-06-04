@@ -40,23 +40,23 @@
         ///
         /// <param name="self">The Cassandra Fluent Migrator.</param>
         /// <param name="table">The Cassandra table name.</param>
-        /// <param name="oldColumn">Old Column to rename.</param>
-        /// <param name="targetName">New Column name.</param>
+        /// <param name="column">Old Column to rename.</param>
+        /// <param name="target">New Column name.</param>
         /// <returns>Nothing.</returns>
-        internal static async Task<ICassandraFluentMigrator> ExecuteRenameColumnQueryAsync([NotNull]this ICassandraFluentMigrator self, [NotNull]string table, [NotNull]string oldColumn, [NotNull]string targetName)
+        internal static async Task<ICassandraFluentMigrator> ExecuteRenameColumnQueryAsync([NotNull]this ICassandraFluentMigrator self, [NotNull]string table, [NotNull]string column, [NotNull]string target)
         {
             Check.NotNull(self, $"The argument [cassandra fluent migrator object]");
             Check.NotEmptyNotNull(table, $"The argument [table]");
-            Check.NotEmptyNotNull(oldColumn, $"The argument [old name]");
-            Check.NotEmptyNotNull(targetName, $"The argument [new name]");
+            Check.NotEmptyNotNull(column, $"The argument [old name]");
+            Check.NotEmptyNotNull(target, $"The argument [new name]");
 
             table = table.NormalizeString();
-            oldColumn = oldColumn.NormalizeString();
-            targetName = targetName.NormalizeString();
+            column = column.NormalizeString();
+            target = target.NormalizeString();
 
-            var query = TableCqlStatements.TABLE_RENAME_COLUMN_STATEMENT.NormalizeString(table, oldColumn, targetName);
+            var query = TableCqlStatements.TABLE_RENAME_COLUMN_STATEMENT.NormalizeString(table, column, target);
 
-            return await self.ExecuteStatementAsync(query, AppErrorsMessages.COLUMN_EXISTS_FOR_RENAME.NormalizeString(oldColumn, targetName, self.GetCassandraSession().Keyspace));
+            return await self.ExecuteStatementAsync(query, AppErrorsMessages.COLUMN_EXISTS_FOR_RENAME.NormalizeString(column, target, self.GetCassandraSession().Keyspace));
         }
 
         /// <summary>
