@@ -157,7 +157,7 @@
 
         [Fact]
         [Priority(100)]
-        public async void DeleteKeyspace_and_ShutdownTheSession()
+        public async void RemoveKeyspace_and_ShutdownTheSession()
         {
             this.session.DeleteKeyspaceIfExists(KEYSPACE);
             await this.session.ShutdownAsync();

@@ -4,6 +4,7 @@
     using Cassandra.Fluent.Migrator.Helper.Extensions;
     using Cassandra.Fluent.Migrator.Tests.Configuration;
     using Cassandra.Fluent.Migrator.Tests.Models;
+    using Cassandra.Fluent.Migrator.Utils.Exceptions;
     using Xunit;
     using Xunit.Priority;
 
@@ -15,6 +16,7 @@
     [TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)]
     public class CfmUdtExtensionsTests
     {
+        private const string UDT_NOT_FOUND = "the User-Defined type [{0}], was not found in the specified cassandra keyspace [{1}]!";
         private const string KEYSPACE = "udt_f1ddd43b_ad8d_4732_b623_bc65c539f04f";
 
         private readonly ISession session;
@@ -45,8 +47,87 @@
         }
 
         [Fact]
+        [Priority(1)]
+        public async void DeleteTheUserDefinedType_Success()
+        {
+            var udtName = nameof(CfmHelperObject);
+
+            var result = this.cfmHelper.DoesUdtExists(udtName);
+            Assert.True(result);
+
+            await this.cfmHelper.DeleteUserDefinedTypeAsync<CfmHelperObject>();
+
+            result = this.cfmHelper.DoesUdtExists(udtName);
+            Assert.False(result);
+        }
+
+        [Fact]
+        [Priority(2)]
+        public async void Initialize_ForTheRestOfTests()
+        {
+            var result = this.cfmHelper.DoesUdtExists(nameof(CfmHelperObject));
+            Assert.False(result);
+
+            /*
+             * Ensure that the UDT we want to create exists.
+             * This was created based on the object {CfmHelperObject} that normally contains 3 field,
+             * but in this method we created only 2 fields for testing purposes.
+             */
+            IStatement statement = new SimpleStatement($"CREATE TYPE IF NOT EXISTS {nameof(CfmHelperObject)} (id int, values text)");
+            await this.session.ExecuteAsync(statement);
+
+            result = this.cfmHelper.DoesUdtExists(nameof(CfmHelperObject));
+            Assert.True(result);
+        }
+
+        [Fact]
+        [Priority(3)]
+        public async void AddColumn_Success()
+        {
+            var column = "AddedColumnFromTest";
+
+            var result = this.cfmHelper.DoesUdtColumnExists(nameof(CfmHelperObject), column);
+            Assert.False(result);
+
+            await this.cfmHelper.AlterUdtAddColumnAsync(nameof(CfmHelperObject), column, typeof(bool));
+
+            result = this.cfmHelper.DoesUdtColumnExists(nameof(CfmHelperObject), column);
+            Assert.True(result);
+        }
+
+        [Fact]
+        [Priority(3)]
+        public async void AddColumn_WithoutType_Success()
+        {
+            var column = nameof(CfmHelperObject.AddedColumnFromTestwithoutType);
+
+            var result = this.cfmHelper.DoesUdtColumnExists(nameof(CfmHelperObject), column);
+            Assert.False(result);
+
+            await this.cfmHelper.AlterUdtAddColumnAsync<CfmHelperObject>(nameof(CfmHelperObject), column);
+
+            result = this.cfmHelper.DoesUdtColumnExists(nameof(CfmHelperObject), column);
+            Assert.True(result);
+        }
+
+        [Fact]
+        [Priority(3)]
+        public async void AddColumn_UdtNotFound_Failed()
+        {
+            try
+            {
+                await this.cfmHelper.AlterUdtAddColumnAsync("DoesntExists", "Values", typeof(string));
+            }
+            catch (ObjectNotFoundException ex)
+            {
+                var expected = string.Format(UDT_NOT_FOUND, "DoesntExists", KEYSPACE).ToLower();
+                Assert.Contains(expected, ex.Message.ToLower());
+            }
+        }
+
+        [Fact]
         [Priority(100)]
-        public async void DeleteKeyspace_and_ShutdownTheSession()
+        public async void RemoveKeyspace_and_ShutdownTheSession()
         {
             this.session.DeleteKeyspaceIfExists(KEYSPACE);
             await this.session.ShutdownAsync();

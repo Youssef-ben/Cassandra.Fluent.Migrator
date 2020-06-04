@@ -64,12 +64,11 @@
         public bool DoesUdtExists([NotNull]string udt)
         {
             Check.NotEmptyNotNull(udt, $"The argument [{nameof(udt)}]");
-            udt = udt.NormalizeString();
 
             var result = this.cassandraSession
                 .Cluster
                 .Metadata
-                .GetUdtDefinition(this.cassandraKeyspace, udt);
+                .GetUdtDefinition(this.cassandraKeyspace, udt.NormalizeString());
 
             return result != null;
         }
@@ -87,7 +86,7 @@
             return this.cassandraSession
                 .Cluster
                 .Metadata
-                .GetUdtDefinition(this.cassandraKeyspace, udt)
+                .GetUdtDefinition(this.cassandraKeyspace, udt.NormalizeString())
                 .Fields
                 .Any(x => x.Name.NormalizeString() == column.NormalizeString());
         }

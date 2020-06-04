@@ -303,23 +303,57 @@ Task<ICassandraFluentMigrator> AlterColumnAsync("table", "field", ["Type"]);
 * Note :
 *    - If the [UdtName: {Null || Empty}] the function will take the Entity name.
 */
-Task<ICassandraFluentMigrator> CreateUserDefinedTypeAsync<TEntity>([NotNull]this ICassandraFluentMigrator self)
 
-/*
-* Drop a new User-Defined Type if not exists. Otherwise it does nothing.
-* Note :
-*    - If the [UdtName: {Null || Empty}] the function will take the Entity name.
-*/
-DropUserDefinedTypeAsync("UdtName");
+/// <summary>
+/// Create the new User-Defined type by building and generating a query
+/// based on the generic class fields and types.
+/// If the UDT already exists the method skips the creation.
+///
+/// <para>Note: If the udt name is [Null || Empty] the method will take the generic type {TEntity} name.</para>
+/// </summary>
+///
+/// <typeparam name="TEntity">The calss where the method should look for the properties and their types.</typeparam>
+/// <param name="self">The Cassandra Fluent Migrator.</param>
+/// <param name="name">The name of the udt (Optional).</param>
+/// <returns>The Cassandra CQL query.</returns>
+///
+/// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
+Task<ICassandraFluentMigrator> CreateUserDefinedTypeAsync<TEntity>([NotNull]this ICassandraFluentMigrator self);
+
+
+/// <summary>
+/// Delete the User-Defined type if exists.
+/// If the UDT doesn't exists the method skips the creation.
+///
+/// <para>Note: If the udt name is [Null || Empty] the method will take the generic type {TEntity} name.</para>
+/// </summary>
+///
+/// <typeparam name="TEntity">The calss where the method should look for the properties and their types.</typeparam>
+/// <param name="self">The Cassandra Fluent Migrator.</param>
+/// <param name="name">The name of the udt (Optional).</param>
+/// <returns>The Cassandra CQL query.</returns>
+///
+/// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
+Task<ICassandraFluentMigrator> DeleteUserDefinedTypeAsync<TEntity>([NotNull]this ICassandraFluentMigrator self, [NotNull]string name = default);
+
 
 // ***************** [Add/Alter/Rename/Delete] Column from a User-Defined Type ***************** //
 
-/*
-* Add Column to Udt if not Exists. Otherwise it does nothing.
-* Note :
-*    - If the [Type: {Null || Empty}] the function will take the Type from the Entity.
-*/
-AlterUdtAddColumnAsync("udt", "field", ["Type"]);
+/// <summary>
+/// Alter the specified Uder-Defined type by adding a new column only if it doesn't exists.
+/// If the UDT exists the method skips the creation.
+/// </summary>
+///
+/// <param name="self">The Cassandra Fluent Migrator.</param>
+/// <param name="udt">The name of the User-Defined type.</param>
+/// <param name="column">The name of the column to be added.</param>
+/// <param name="type">The type of the new column.</param>
+/// <returns>The Cassandra CQL query.</returns>
+///
+/// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
+/// <exception cref="ObjectNotFoundException">Thrown when the table doesn't exists.</exception>
+Task<ICassandraFluentMigrator> AlterUdtAddColumnAsync([NotNull]this ICassandraFluentMigrator self, [NotNull]string udt, string column, Type type);
+Task<ICassandraFluentMigrator> AlterUdtAddColumnAsync<TEntity>([NotNull]this ICassandraFluentMigrator self, [NotNull]string udt, string column);
 
 /*
 * Alter Udt Column if Exists. Otherwise it does nothing.
