@@ -8,7 +8,7 @@
     using Cassandra.Fluent.Migrator.Utils.Constants;
     using Microsoft.Rest.ClientRuntime.Azure.Authentication.Utilities;
 
-    public static class TableExtensionsHelpers
+    internal static class TableExtensionsHelpers
     {
         /// <summary>
         /// Build and execute the Add columns query statement.

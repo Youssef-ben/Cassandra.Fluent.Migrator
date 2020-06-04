@@ -9,6 +9,11 @@
     using Xunit;
     using Xunit.Priority;
 
+    /// <summary>
+    /// IMPORTANT NOTE: the use of {nameof(...)} in this test file is only
+    /// to make sure that we have a consistency and the tests don't break
+    /// BUT IN REAL WORLD application use MUST use a "string" for the migrations.
+    /// </summary>
     [TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)]
     public class CfmTableExtensionsTests
     {
@@ -30,36 +35,80 @@
         [Priority(0)]
         public async void Initialize()
         {
-            // Ensure that the Table we want to create exists.
+            var result = this.cfmHelper.DoesTableExists(nameof(CfmHelperObject));
+            Assert.False(result);
+
+            /*
+             * Ensure that the Table we want to create exists.
+             * This was created based on the object {CfmHelperObject} that normally contains 3 field,
+             * but in this method we created only 2 fields for testing purposes.
+             */
             IStatement statement = new SimpleStatement($"CREATE TABLE IF NOT EXISTS {nameof(CfmHelperObject)}(id int, values text, PRIMARY KEY (id))");
             await this.session.ExecuteAsync(statement);
+
+            result = this.cfmHelper.DoesTableExists(nameof(CfmHelperObject));
+            Assert.True(result);
         }
 
         [Fact]
         [Priority(1)]
         public async void AddColumn_TypeSpecified_Success()
         {
-            await this.cfmHelper.AddColumnAsync(nameof(CfmHelperObject), "AddedColumnFromTest", typeof(string));
+            var column = "AddedColumnFromTest";
+
+            var result = this.cfmHelper.DoesColumnExists(nameof(CfmHelperObject), column);
+            Assert.False(result);
+
+            await this.cfmHelper.AddColumnAsync(nameof(CfmHelperObject), column, typeof(string));
+
+            result = this.cfmHelper.DoesColumnExists(nameof(CfmHelperObject), column);
+            Assert.True(result);
         }
 
         [Fact]
         [Priority(1)]
         public async void AddColumn_TypeNotSpecified_Success()
         {
-            await this.cfmHelper.AddColumnAsync<CfmHelperObject>(nameof(CfmHelperObject), "AddedColumnFromTestwithoutType");
+            var column = "AddedColumnFromTestwithoutType";
+
+            var result = this.cfmHelper.DoesColumnExists(nameof(CfmHelperObject), column);
+            Assert.False(result);
+
+            await this.cfmHelper.AddColumnAsync<CfmHelperObject>(nameof(CfmHelperObject), column);
+
+            result = this.cfmHelper.DoesColumnExists(nameof(CfmHelperObject), column);
+            Assert.True(result);
         }
 
         [Fact]
         [Priority(2)]
         public async void RenamePrimaryKey_Success()
         {
-            await this.cfmHelper.RenamePrimaryColumnAsync(nameof(CfmHelperObject), "id", "renamedId");
+            var old = "id";
+            var target = "renamedId";
+
+            var result = this.cfmHelper.DoesColumnExists(nameof(CfmHelperObject), old);
+            Assert.True(result);
+
+            result = this.cfmHelper.DoesColumnExists(nameof(CfmHelperObject), target);
+            Assert.False(result);
+
+            await this.cfmHelper.RenamePrimaryColumnAsync(nameof(CfmHelperObject), old, target);
+
+            result = this.cfmHelper.DoesColumnExists(nameof(CfmHelperObject), old);
+            Assert.False(result);
+
+            result = this.cfmHelper.DoesColumnExists(nameof(CfmHelperObject), target);
+            Assert.True(result);
         }
 
         [Fact]
         [Priority(3)]
-        public async void RenamePrimaryKey_DoesntExists_Failed()
+        public async void RenamePrimaryKey_DoesntExists_SKIPPED()
         {
+            var result = this.cfmHelper.DoesColumnExists(nameof(CfmHelperObject), "id");
+            Assert.False(result);
+
             await this.cfmHelper.RenamePrimaryColumnAsync(nameof(CfmHelperObject), "id", "renamedId");
         }
 
@@ -81,7 +130,15 @@
         [Priority(5)]
         public async void DeleteColumn_Success()
         {
-            await this.cfmHelper.DropColumnAsync(nameof(CfmHelperObject), "AddedColumnFromTestwithoutType");
+            var column = "AddedColumnFromTestwithoutType";
+
+            var result = this.cfmHelper.DoesColumnExists(nameof(CfmHelperObject), column);
+            Assert.True(result);
+
+            await this.cfmHelper.DropColumnAsync(nameof(CfmHelperObject), column);
+
+            result = this.cfmHelper.DoesColumnExists(nameof(CfmHelperObject), column);
+            Assert.False(result);
         }
 
         [Fact]

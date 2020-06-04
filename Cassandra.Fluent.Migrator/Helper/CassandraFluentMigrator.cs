@@ -64,6 +64,7 @@
         public bool DoesUdtExists([NotNull]string udt)
         {
             Check.NotEmptyNotNull(udt, $"The argument [{nameof(udt)}]");
+            udt = udt.NormalizeString();
 
             var result = this.cassandraSession
                 .Cluster

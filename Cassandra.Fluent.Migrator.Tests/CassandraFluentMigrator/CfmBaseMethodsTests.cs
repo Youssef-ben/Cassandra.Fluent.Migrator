@@ -39,14 +39,20 @@
                 .CreateIfNotExistsAsync();
 
             /*
-             * TODO
+             * TODO: Test methods - Create UDT.
              * Ensure that the User-Defined type and columns exists.
              * Ticket: https://github.com/Youssef-ben/Cassandra.Fluent.Migrator/projects/1#card-39240226
              *
-             * TODO
+             * TODO: Test methods - Create Materialized view.
              * Ensure that the Materialized View and columns exists.
              * Ticket: https://github.com/Youssef-ben/Cassandra.Fluent.Migrator/projects/1#card-39240284
              */
+
+            await this.cfmHelper.GetCassandraSession()
+                .UserDefinedTypes.DefineAsync(
+                    UdtMap
+                    .For<CfmHelperObject>()
+                    .Automap());
         }
 
         [Fact]

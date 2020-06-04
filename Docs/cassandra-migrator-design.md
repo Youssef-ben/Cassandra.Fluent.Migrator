@@ -303,7 +303,7 @@ Task<ICassandraFluentMigrator> AlterColumnAsync("table", "field", ["Type"]);
 * Note :
 *    - If the [UdtName: {Null || Empty}] the function will take the Entity name.
 */
-CreateUserDefinedTypeAsync("UdtName");
+Task<ICassandraFluentMigrator> CreateUserDefinedTypeAsync<TEntity>([NotNull]this ICassandraFluentMigrator self)
 
 /*
 * Drop a new User-Defined Type if not exists. Otherwise it does nothing.
