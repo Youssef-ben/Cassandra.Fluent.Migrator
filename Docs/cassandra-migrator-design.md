@@ -1,6 +1,6 @@
-# Cassandra Fluent Migrator - Design document
+# Cassandra Fluent Migrator - Design document - Initial draft
 
-This document describes the design and thoughts behind this library (Should be deleted)
+This document describes the design and thoughts behind this library.
 
 (P.S: The library will use the `Ilogger<TClass>` to log all important actions)
 
@@ -16,10 +16,10 @@ Interface : `ICassandraMigrator`
 
 Handler   : `CassandraMigrator`
 
-This class is the core of the library, most of the logic to fetch and execute the migration will be handled by it.
+This class is the core of the library, it will fetch and execute the migrations.
 
-In other words, The role of this Class is to execute all the registred Migration from the Dependency Injection
-by fetching the list and iterate while checking that it's not applied yet.
+In other words, The role of this Class is to execute all the registred Migrations from the Dependency Injection container
+by fetching the list and iterate while checking that the migration isn't applied yet.
 
 The Handler will expose the following methods:
 
@@ -32,33 +32,33 @@ The Handler will expose the following methods:
 *  Loop on the Migrators and check if we need to apply the migration.
 *    - If yes, execute the Migrator method `ApplyMigration[Async]`.
 *    - If not, skip with a message.
+*  If the table [MigrationHistory] doesn't exists it should create it before.
 */
+Migrate();
 MigrateAsync();
 
 /**
 * Get the latest migration from the database
 */
 GetLatestMigration();
-
-/**
-* Get the latest version from the database.
-*/
-GetLatestVesion();
+GetLatestMigrationAsync();
 
 /**
 * Get the migrations from the the Dependency Injection `ServiceProvider`.
 * Sort the list by version.
 */
-GetMigrations()
+GetMigrations();
+GetMigrationsAsync();
 
 /**
 * Get The applied migration from the database.
 * Sort the list by version.
 */
-GetAppliedMigrations()
+GetAppliedMigrations();
+GetAppliedMigrationsAsync()
 ```
 
-* This class wil have its internal helper
+* This class will have its internal helper
 
 ```CSharp
 /**
@@ -68,11 +68,13 @@ GetAppliedMigrations()
 *     - Table Scheme : [MigrationHistory: {Name, Version, CreateAt, Description}
 */
 InitFluentCassandraMigrator();
+InitFluentCassandraMigratorAsync();
 
 /**
 * Validate that the Target version is a valid version.
 * Checks if we should apply the migration.
 */
+ShouldApplyMigration(IMigrator migration);
 ShouldApplyMigrationAsync(IMigrator migration);
 
 /**
@@ -80,6 +82,7 @@ ShouldApplyMigrationAsync(IMigrator migration);
 *     - Create New Entry for the Migration in the {MigrationHistory}.
 */
 UpdateMigrationHistory(SchemeDetails);
+UpdateMigrationHistoryAsync(SchemeDetails);
 ```
 
 ### Migrator Interface
@@ -111,19 +114,20 @@ ApplyMigration();
 ApplyMigrationAsync();
 ```
 
-### Migration Helper
+### Migrator Helper
 
-Interface: `IFluentCassandraMigrator`
+Interface: `ICassandraFluentMigrator`
 
-Handler  : `FluentCassandraMigrator`
+Handler  : `CassandraFluentMigrator`
 
-This Class will contain the methods that will be needed by the user to create his migrations. It offers a set of method that can be chained together for fluent code.
+This Class will contain the methods that will be needed by the user to create his migrations. It should offer a set of methods that can be chained together for fluent code.
 
 This helper will be devided to two sections (Class and extensions)
 
 #### Class
 
 This Class should be called in the constructor of the user migration and should be used as private property.
+
 it define the following methods:
 
 _**Note:** it's recomended to use strings instead of `nameof(...)` when using the migration methods this will allow to keep a certain consistency in your migrations._
@@ -131,65 +135,110 @@ _**Note:** it's recomended to use strings instead of `nameof(...)` when using th
 _**Note:** the `[...]` represent optional parameter_
 
 ```CSharp
-/*
-* Set the Cassandra Session Context.
-*/
-GetCassandraSession();
+/// <summary>
+/// Gets the registred Cassandra session context.
+/// </summary>
+/// <returns>Current instance of the Cassadnra session.</returns>
+ISession GetCassandraSession();
 
-/*
-* Get a Cassandra Instance of the Table.
-*/
-GetTable("TableName");
+/// <summary>
+/// Gets the Cassandra table based on the {TEntity}.
+/// </summary>
+/// <typeparam name="TEntity">The Class that represent a table in Cassandra.</typeparam>
+/// <returns>Instance of the Cassandra table.</returns>
+Table<TEntity> GetTable<TEntity>()
+    where TEntity : class;
 
-/*
-* Checks if the Table exists in the Database.
-*/
-DoesTableExists("TableName");
+/// <summary>
+/// Checks if the table exists in the Cassandra session context.
+/// </summary>
+/// <param name="table">The table we need to search for.</param>
+/// <returns>True, if exists. False otherwise.</returns>
+///
+/// <exception cref="NullReferenceException">Thrown when the table value is null or empty.</exception>
+bool DoesTableExists([NotNull]string table);
 
-/*
-* Checks if the column exists in the table or User-Defined Type.
-*/
-DoesColumnExists("TableName", "ColumnName")
+/// <summary>
+/// Checks if the column exits in the specified table.
+/// </summary>
+///
+/// <remarks>
+/// Before checking that the columns exists, the method first checks that the table exists.
+/// </remarks>
+///
+/// <param name="table">The table we want to search.</param>
+/// <param name="column">The column that we want to search for.</param>
+/// <returns>True, if exists. False, Otherwise.</returns>
+///
+/// <exception cref="NullReferenceException">Thrown when the table or column value is null or empty.</exception>
+/// <exception cref="ObjectNotFoundException">Thrown when the table isn't available in the current casasndra session.</exception>
+bool DoesColumnExists([NotNull]string table, [NotNull]string column);
 
-/*
-* Checks if the Materialized View Exist in the Database.
-*/
-DoesViewExits("ViewName");
+/// <summary>
+/// Checks if the User-Defined type exists in the Cassandra session context.
+/// </summary>
+/// <param name="udt">The User-Defined type that we need to search for.</param>
+/// <returns>True, if exists. False otherwise.</returns>
+///
+/// <exception cref="NullReferenceException">Thrown when the User-Defined type value is null or empty.</exception>
+bool DoesUdtExists([NotNull]string udt);
 
-/*
-* Checks if the User-Defined Type exists in the Database.
-*/
-DoesUdtExists("UdtName");
+/// <summary>
+/// Checks if the column exits in the specified User-Defined type.
+/// </summary>
+///
+/// <remarks>
+/// Before checking that the columns exists, the method first checks that the User-Defined type exists.
+/// </remarks>
+///
+/// <param name="udt">The User-Defined type we want to search.</param>
+/// <param name="column">The column that we want to search for.</param>
+/// <returns>True, if exists. False otherwise.</returns>
+///
+/// <exception cref="NullReferenceException">Thrown when the User-Defined type or column value is null or empty.</exception>
+/// <exception cref="ObjectNotFoundException">Thrown when the User-Defined type isn't available in the current casasndra session.</exception>
+bool DoesUdtColumnExists([NotNull]string udt, [NotNull]string column);
 
-/*
-* Checks if the User-Defined Type has the Specified Column.
-*/
-DoesUdtColumnExists("UdtName", "ColumnName");
+/// <summary>
+/// Checks if the Materialized view exists in the Cassandra session context.
+/// </summary>
+/// <param name="view">The Materialized view that we need to search for.</param>
+/// <returns>True, if exists. False otherwise.</returns>
+///
+/// <exception cref="NullReferenceException">Thrown when the Materialized view value is null or empty.</exception>
+bool DoesMaterializedViewExists([NotNull]string view);
 
-/*
-* Convert C# Type to Cassandra Type (CQL or UDT)
-*
-* tryAction: The Try Action that should be executed to convert the CSharp type.
-*   - SYSTME_TYPE
-*   - LIST_TYPES
-*   - USER_DEFINED_TYPES
-*/
-ConvertToCQLType(Type, TryAction);
+/// <summary>
+/// Checks if the column exits in the specified Materialized view.
+/// </summary>
+///
+/// <remarks>
+/// Before checking that the columns exists, the method first checks that the Materialized view exists.
+/// </remarks>
+///
+/// <param name="view">The Materialized view. we want to search.</param>
+/// <param name="column">The column that we want to search for.</param>
+/// <returns>True, if exists. False otherwise.</returns>
+///
+/// <exception cref="NullReferenceException">Thrown when the Materialized view or the column value is null or empty.</exception>
+/// <exception cref="ObjectNotFoundException">Thrown when the Materialized view isn't available in the current casasndra session.</exception>
+bool DoesMaterializedViewColumnExists([NotNull]string view, [NotNull] string column);
 
-/*
-* Convert the Current Type to a CQL List.
-*/
-ConvertToCqlList(Type);
+/// <summary>
+/// Get the Cassandra CQL type equivalent to the specified CSharp type.
+/// </summary>
+/// <param name="type">The CSharp type to be converted.</param>
+/// <returns>Return string value containing the Cassandra CQL type.</returns>
+string GetCqlType([NotNull]Type type);
 
-/*
-* Convert the Current Type to a CQL User-Defined Type.
-*/
-ConvertToCqlUdt(Type);
-
-/*
-* Get the Type of the Field from the Caller Object.
-*/
-GetFieldType("tableName", "FieldName");
+/// <summary>
+/// Get the Cassandra CQL type of the specified column.
+/// </summary>
+/// <typeparam name="TEntity">The class where we need to look for the column type.</typeparam>
+/// <param name="column">The column that we want to search for.</param>
+/// <returns>Return string value of the Cassandra CQL type.</returns>
+string GetColumnType<TEntity>([NotNull]string column)
+    where TEntity : class;
 ```
 
 #### Extensions
@@ -197,32 +246,53 @@ GetFieldType("tableName", "FieldName");
 * `Tables:` Set of methods to handle the [Creation/Alter/Rename/Delete] of a table columns.
 
 ```CSharp
+/// <summary>
+/// Adds the specified column to the targeted table only if the column doesn't exists.
+/// </summary>
+///
+/// <param name="self">The instance of the Cassandra Fluent Migratr helper.</param>
+/// <param name="table">The table to which we want to add the new column.</param>
+/// <param name="column">The new column.</param>
+/// <param name="type">The new column type.</param>
+/// <returns>The instance of the Cassandra Fluent Migrator helper.</returns>
+///
+/// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
+/// <exception cref="ObjectNotFoundException">Thrown when the table doesn't exists.</exception>
+Task<ICassandraFluentMigrator> AddColumnAsync(string table, string column, Type type);
+Task<ICassandraFluentMigrator> AddColumnAsync<TTableClass>(string table, string column);
 
-CreateTableAsync("table");
+/// <summary>
+/// Rename the specified column in the targeted table only if the column exists.
+/// <para>IMPORTANT: In Cassandra only the Primary key can be renamed.</para>
+/// </summary>
+///
+/// <typeparam name="Table">The Table where we should look for the column type.</typeparam>
+/// <param name="self">Cassandra Table.</param>
+/// <param name="table">The table.</param>
+/// <param name="old">The column to be renamed.</param>
+/// <param name="target">The new column name.</param>
+/// <returns>The table Instance.</returns>
+///
+/// <exception cref="ArgumentNullException">Thrown when one of the arguments is null or empty.</exception>
+/// <exception cref="ApplicationException">Thrown when the Column is not a primary key.</exception>
+Task<ICassandraFluentMigrator> RenamePrimaryColumnAsync(this ICassandraFluentMigrator self, string table, string old, string target);
 
-/*
-* Add a Column if not exists to the table. Otherwise it does nothing.
-* Note :
-*    - If the {Type: [Null || Empty]} the function will get the type from the {Entity} directly.
-*/
-AddColumnAsync("table", "field", ["Type"]);
+/// <summary>
+/// Drops the specified column from the targeted table only if the column exists.
+/// </summary>
+///
+/// <param name="self">The instance of the Cassandra Fluent Migrator helper.</param>
+/// <param name="table">The table from which we want to delete the column.</param>
+/// <param name="column">The column to be deleted.</param>
+/// <returns>The table Instance.</returns>
+///
+/// <exception cref="ArgumentNullException">Thrown when one of the arguments is null or empty.</exception>
+/// <exception cref="ObjectNotFoundException">Thrown when the table doesn't exists.</exception>
+Task<ICassandraFluentMigrator> DropColumnAsync(this ICassandraFluentMigrator self, [NotNull]string table, [NotNull]string column);
 
-/*
-* Alter the type of the Column if exists. Otherwise it does nothing.
-* Note :
-*    - If the {Type: [Null || Empty]} the function will get the type from the {Entity} directly.
-*/
-AlterColumnAsync("table", "field", ["Type"]);
 
-/*
-* Rename the Column if exists. Otherwise it does nothing.
-*/
-RenameColumnAsync("table", "old", "new");
-
-/*
-* Delete the Column if exists. Otherwise it does nothing.
-*/
-DeleteColumnAsync("table", "field");
+// IMPORTANT: Alter Column is no longer supported in Cassandra v3.x
+Task<ICassandraFluentMigrator> AlterColumnAsync("table", "field", ["Type"]);
 ```
 
 * `User Defined Types:` Sets of methods to handle the [Creation/Alter/Rename/Delete] of a User-Defined Type.
@@ -233,40 +303,80 @@ DeleteColumnAsync("table", "field");
 * Note :
 *    - If the [UdtName: {Null || Empty}] the function will take the Entity name.
 */
-CreateUserDefinedTypeAsync("UdtName");
 
-/*
-* Drop a new User-Defined Type if not exists. Otherwise it does nothing.
-* Note :
-*    - If the [UdtName: {Null || Empty}] the function will take the Entity name.
-*/
-DropUserDefinedTypeAsync("UdtName");
+/// <summary>
+/// Create the new User-Defined type by building and generating a query
+/// based on the generic class fields and types.
+/// If the UDT already exists the method skips the creation.
+///
+/// <para>Note: If the udt name is [Null || Empty] the method will take the generic type {TEntity} name.</para>
+/// </summary>
+///
+/// <typeparam name="TEntity">The calss where the method should look for the properties and their types.</typeparam>
+/// <param name="self">The Cassandra Fluent Migrator.</param>
+/// <param name="name">The name of the udt (Optional).</param>
+/// <returns>The Cassandra CQL query.</returns>
+///
+/// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
+Task<ICassandraFluentMigrator> CreateUserDefinedTypeAsync<TEntity>([NotNull]this ICassandraFluentMigrator self);
+
+
+/// <summary>
+/// Delete the User-Defined type if exists.
+/// If the UDT doesn't exists the method skips the creation.
+///
+/// <para>Note: If the udt name is [Null || Empty] the method will take the generic type {TEntity} name.</para>
+/// </summary>
+///
+/// <typeparam name="TEntity">The calss where the method should look for the properties and their types.</typeparam>
+/// <param name="self">The Cassandra Fluent Migrator.</param>
+/// <param name="name">The name of the udt (Optional).</param>
+/// <returns>The Cassandra CQL query.</returns>
+///
+/// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
+Task<ICassandraFluentMigrator> DeleteUserDefinedTypeAsync<TEntity>([NotNull]this ICassandraFluentMigrator self, [NotNull]string name = default);
+
 
 // ***************** [Add/Alter/Rename/Delete] Column from a User-Defined Type ***************** //
 
-/*
-* Add Column to Udt if not Exists. Otherwise it does nothing.
-* Note :
-*    - If the [Type: {Null || Empty}] the function will take the Type from the Entity.
-*/
-AlterUdtAddColumnAsync("udt", "field", ["Type"]);
+/// <summary>
+/// Alter the specified Uder-Defined type by adding a new column only if it doesn't exists.
+/// If the UDT exists the method skips the creation.
+/// </summary>
+///
+/// <param name="self">The Cassandra Fluent Migrator.</param>
+/// <param name="udt">The name of the User-Defined type.</param>
+/// <param name="column">The name of the column to be added.</param>
+/// <param name="type">The type of the new column.</param>
+/// <returns>The Cassandra CQL query.</returns>
+///
+/// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
+/// <exception cref="ObjectNotFoundException">Thrown when the udt doesn't exists.</exception>
+Task<ICassandraFluentMigrator> AlterUdtAddColumnAsync([NotNull]this ICassandraFluentMigrator self, [NotNull]string udt, string column, Type type);
+Task<ICassandraFluentMigrator> AlterUdtAddColumnAsync<TEntity>([NotNull]this ICassandraFluentMigrator self, [NotNull]string udt, string column);
 
-/*
-* Alter Udt Column if Exists. Otherwise it does nothing.
-* Note :
-*    - If the [Type: {Null || Empty}] the function will take the Type from the Entity.
-*/
-AlterUdtAlterColumnAsync("udt", "field", ["Type"]);
+/// <summary>
+/// Alter the specified User-Defined type by renaming the column name by the target name.
+/// In case the target name exists the method throws an exception.
+/// </summary>
+///
+/// <param name="self">The Cassandra Fluent Migrator.</param>
+/// <param name="udt">The name of the User-Defined type.</param>
+/// <param name="column">The name of the column to be renamed.</param>
+/// <param name="target">The new column name.</param>
+/// <returns>The Cassandra Fluent Migrator helper.</returns>
+///
+/// <exception cref="ArgumentNullException">Thrown when one of the arguments is null or empty.</exception>
+/// <exception cref="InvalidOperationException">Thrown when the target column name exists.</exception>
+/// <exception cref="ObjectNotFoundException">Thrown when the udt doesn't exists.</exception>
+Task<ICassandraFluentMigrator> AlterUdtRenameColumnAsync([NotNull]this ICassandraFluentMigrator self, [NotNull]string udt, [NotNull]string column, [NotNull]string target);
 
-/*
-* Rename Udt Column if Exists. Otherwise it does nothing.
-*/
-AlterUdtRenameColumnAsync("udt", "old", "new");
 
-/*
-* Delete Udt Column if Exists. Otherwise it does nothing.
-*/
+// IMPORTANT: Cassandra doesn't support Dropping a column of a type.
 AlterUdtDeleteColumnAsync("udt", "field");
+
+// IMPORTANT: Alter Column is no longer supported in Cassandra v3.x
+AlterUdtAlterColumnAsync("udt", "field", ["Type"]);
 ```
 
 * `Materialized View:` Set of methods to handle the [Creation/Alter/Rename/Delete] of a Materialized View.
