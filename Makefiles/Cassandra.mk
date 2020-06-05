@@ -24,7 +24,7 @@ remove: stop ## Stops and remove the cassandra container
 
 clean: ## Remove the container and its image.
 	@echo "Cleaning Cassandra databse..."
-	@docker-compose down -v -rmi all
+	@docker-compose down -v --rmi all
 
 cqlsh: ## Start Cassandra {CQLSH} console to query the database.
 	@echo "Starting Cassandra {cqlsh} console..."
