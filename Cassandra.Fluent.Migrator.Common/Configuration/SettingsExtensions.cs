@@ -1,19 +1,34 @@
-﻿namespace Cassandra.Fluent.Migrator.Tests.Configuration
+﻿namespace Cassandra.Fluent.Migrator.Common.Configuration
 {
     using System;
-    using Cassandra.Fluent.Migrator.Tests.Models.Configuration;
+    using Cassandra.Fluent.Migrator.Common.Models.Configuration;
     using Microsoft.Extensions.Configuration;
 
     public static class SettingsExtensions
     {
         /// <summary>
         /// Validate the Cassandra configuration section and return a new instance of the Cassandra Setting object.
+        /// (Target Tests).
         /// </summary>
         /// <returns>New Instance of the Cassandra settings.</returns>
-        public static CassandraSettings GetConfiguration()
+        internal static CassandraSettings GetCassandraSettings()
         {
             var sectionName = nameof(CassandraSettings).Replace("Settings", string.Empty);
             return LoadConfiguration()
+                .GetConfigInstance(sectionName)
+                .ValidateConfiguration();
+        }
+
+        /// <summary>
+        /// Validate the Cassandra configuration section and return a new instance of the Cassandra Setting object.
+        /// (Target API).
+        /// </summary>
+        /// <param name="self">The Configuration class.</param>
+        /// <returns>New Instance of the Cassandra settings.</returns>
+        internal static CassandraSettings GetCassandraSettings(this IConfiguration self)
+        {
+            var sectionName = nameof(CassandraSettings).Replace("Settings", string.Empty);
+            return self
                 .GetConfigInstance(sectionName)
                 .ValidateConfiguration();
         }

@@ -28,7 +28,7 @@ clean: ## Remove the container and its image.
 
 cqlsh: ## Start Cassandra {CQLSH} console to query the database.
 	@echo "Starting Cassandra {cqlsh} console..."
-	@docker exec -it $(DB_CONTAINER_NAME) cqlsh
+	@docker exec -it cfm-database cqlsh
 
 queries: ## Show some queries that can be used for tests.
 	@echo "List available keyspaces: DESCRIBE keyspaces;"

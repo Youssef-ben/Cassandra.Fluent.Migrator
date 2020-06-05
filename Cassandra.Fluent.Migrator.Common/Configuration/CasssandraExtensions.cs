@@ -1,11 +1,29 @@
-﻿namespace Cassandra.Fluent.Migrator.Tests.Configuration
+﻿namespace Cassandra.Fluent.Migrator.Common.Configuration
 {
     using System.Diagnostics.CodeAnalysis;
-    using Cassandra.Fluent.Migrator.Tests.Models.Configuration;
+    using Cassandra.Fluent.Migrator.Common.Models.Configuration;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Rest.ClientRuntime.Azure.Authentication.Utilities;
 
     public static class CasssandraExtensions
     {
+        /// <summary>
+        /// Validate the Cassandra Settings, Create a new connection to the database and add them to the Service Collection.
+        /// </summary>
+        /// <param name="self">The Service collection calling this method.</param>
+        /// <param name="configuration">The Database name space.</param>
+        /// <returns>Return a new Session instance.</returns>
+        public static IServiceCollection AddCassandraSession([NotNull]this IServiceCollection self, [NotNull]IConfiguration configuration)
+        {
+            Check.NotNull(self, $"The argument [Service Colection]");
+            Check.NotNull(self, $"The argument [Configuration]");
+
+            return self
+                .Configure<CassandraSettings>(opt => configuration.GetCassandraSettings())
+                .AddTransient<ISession>(opt => configuration.GetCassandraSettings().BuildClusterAndConnect());
+        }
+
         /// <summary>
         /// Validate the Cassandra Settings, Create a new connection to the database and return the newly created session.
         /// </summary>
@@ -13,13 +31,13 @@
         /// <param name="self">The class calling this method.</param>
         /// <param name="keyspace">The Database name space.</param>
         /// <returns>Return a new Session instance.</returns>
-        public static ISession GetCassandraSession<TClass>([NotNull]this TClass self, string keyspace = default)
+        public static ISession GetTestCassandraSession<TClass>([NotNull]this TClass self, string keyspace = default)
             where TClass : class
         {
             Check.NotNull(self);
 
             return SettingsExtensions
-                .GetConfiguration()
+                .GetCassandraSettings()
                 .BuildClusterAndConnect(keyspace);
         }
 
@@ -33,6 +51,7 @@
         {
             var username = self.Credentials.Username;
             var password = self.Credentials.Password;
+            keyspace = string.IsNullOrWhiteSpace(keyspace) ? self.DefaultKeyspace : keyspace;
 
             var consistentyQueryOption = new QueryOptions().SetConsistencyLevel((ConsistencyLevel)self.Query.ConsistencyLevel);
             var heartbeat = new PoolingOptions().SetHeartBeatInterval(self.Query.HeartBeat);
@@ -54,7 +73,7 @@
                .WithQueryOptions(consistentyQueryOption)
                .WithLoadBalancingPolicy(new TokenAwarePolicy(new DCAwareRoundRobinPolicy()))
                .WithPoolingOptions(heartbeat)
-               .WithDefaultKeyspace(string.IsNullOrWhiteSpace(keyspace) ? self.DefaultKeyspace : keyspace)
+               .WithDefaultKeyspace(keyspace)
                .Build()
                .ConnectAndCreateDefaultKeyspaceIfNotExists(self.Replication);
         }
