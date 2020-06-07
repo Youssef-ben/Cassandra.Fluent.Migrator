@@ -12,6 +12,8 @@ This section defines the classes and their roles in the library.
 
 ### Cassandra Migrator
 
+TODO: ADD SUPPORTED TYPES
+
 Interface : `ICassandraMigrator`
 
 Handler   : `CassandraMigrator`

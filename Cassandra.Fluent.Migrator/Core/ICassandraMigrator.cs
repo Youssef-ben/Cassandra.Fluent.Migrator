@@ -9,13 +9,17 @@
         /// <summary>
         /// Start the migration process.
         ///
-        /// The method fetch the registred migrations from the {Services Provider} of the app.
-        /// Before appling a migration, the method checks if its already applied, If True, it skipps
-        /// the migration otherwise applies it using the {ApplyMigration()} of the current migration.
+        /// <para>
+        ///     The method fetch the registred migrations from the {Services Provider} of the app and applies them.
+        ///     Before running a migration, the method validate that it's not already applied, otherwise it skipps migration.
+        ///     The migrator uses the {ApplyMigration()} method of the current migration.
+        /// </para>
         ///
-        /// <para>NOTE: Use with caution.
-        /// It's recommended to apply the migration at the project startup using the
-        /// <see cref="CassandraFluentMigratorConfiguration.UseCassandraMigration(IApplicationBuilder)"/> method.</para>
+        /// <para>
+        ///     NOTE: Use with caution.
+        ///     It's recommended to apply the migration at the project startup using the
+        ///     <see cref="CassandraFluentMigratorConfiguration.UseCassandraMigration(IApplicationBuilder)"/> method.
+        /// </para>
         /// </summary>
         ///
         /// <returns>Count of the applied migrations.</returns>
@@ -25,11 +29,11 @@
         /// Get the latest migration that was applied to the schema.
         /// </summary>
         ///
-        /// <returns>Migration history details.</returns>
+        /// <returns>The Migration details.</returns>
         MigrationHistory GetLatestMigration();
 
         /// <summary>
-        /// Gets the list of the registred migrations from the app {services provider}.
+        /// Gets the list of the registred migrations in the app {services provider}.
         /// The migrations are automatically sorted older to latest.
         /// </summary>
         ///

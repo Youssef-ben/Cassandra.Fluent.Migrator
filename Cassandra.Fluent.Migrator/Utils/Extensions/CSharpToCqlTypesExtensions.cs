@@ -18,37 +18,46 @@
         /// <param name="self">The CSharp Type.</param>
         /// <param name="shouldBeFrozen">Define if the type should be treated as a frozen type or not.</param>
         /// <returns>CQL type.</returns>
+        ///
         /// <exception cref="NullReferenceException">Thrown when the specified type is invalid or null.</exception>
         internal static string GetCqlType([NotNull]this Type self, bool shouldBeFrozen)
         {
             Check.NotNull(self, $"The argument [type]");
 
-            return self.ConvertToCQLType(shouldBeFrozen).NormalizeString();
+            return self
+                .ConvertToCQLType(shouldBeFrozen)
+                .NormalizeString();
         }
 
         /// <summary>
         /// Gets the equivalente CQL type from the Specified type column.
         /// </summary>
-        /// <param name="self">Cassandra Table/UserDefined-type.</param>
+        ///
+        /// <param name="self">Cassandra Table/User-Defined type.</param>
         /// <param name="column">Column name.</param>
         /// <param name="shouldBeFrozen">Define if the type should be treated as a frozen type or not.</param>
         /// <returns>CQL type.</returns>
-        /// <exception cref="NullReferenceException">Thrown when the Column is not found in the specified object.</exception>
+        ///
+        /// <exception cref="NullReferenceException">Thrown when the type or the column is invalid or null.</exception>
         internal static string GetCqlType([NotNull]this Type self, [NotNull]string column, bool shouldBeFrozen)
         {
             Check.NotNull(self, $"The argument [type]");
 
-            return GetCqlTypeFromColumn(self, column, shouldBeFrozen).NormalizeString();
+            return GetCqlTypeFromColumn(self, column, shouldBeFrozen)
+                .NormalizeString();
         }
 
         /// <summary>
-        /// Get The Column Type from the specified Type.
+        /// Gets the Column equivalente CQL type from the Specified type.
         /// </summary>
-        /// <param name="type">Type to from which we need to get the column type.</param>
-        /// <param name="column">The Column from which we need to get the type.</param>
+        ///
+        /// <param name="type">Type Cassandra Table/User-Defined type from which we need to get the column type.</param>
+        /// <param name="column">The Column we should use to get the type.</param>
         /// <param name="shouldBeFrozen">Define if the type should be treated as a frozen type or not.</param>
         /// <returns>CQL Type.</returns>
-        /// <exception cref="NullReferenceException">Thrown when the Column is not found in the specified object.</exception>
+        ///
+        /// <exception cref="NullReferenceException">Thrown when the type or the Column is invalid or null.</exception>
+        /// <exception cref="ObjectNotFoundException">Thrown when the Column is not found in the specified object.</exception>
         private static string GetCqlTypeFromColumn([NotNull]Type type, [NotNull]string column, bool shouldBeFrozen)
         {
             Check.NotNull(type, $"The argument [{nameof(type)}]");
@@ -57,7 +66,8 @@
             var instance = type.GetProperties()
                     .Select(prop => prop)
                     .Where(prop => prop.Name.Equals(column, StringComparison.OrdinalIgnoreCase))
-                    .FirstOrDefault()?.PropertyType;
+                    .FirstOrDefault()
+                    ?.PropertyType;
 
             if (instance is null)
             {
@@ -83,7 +93,8 @@
         /// <param name="shouldBeFrozen">Define if the type should be treated as a frozen type or not.</param>
         /// <param name="tryAction">The Try Action that should be executed to try and convert the CSharp type.</param>
         /// <returns>CQL Type.</returns>
-        /// <exception cref="NotSupportedException">Thrown when the type passed is not supported or found.</exception>
+        ///
+        /// <exception cref="NotSupportedException">Thrown when the type is not supported or found.</exception>
         private static string ConvertToCQLType([NotNull]this Type self, bool shouldBeFrozen, TryConvertionAction tryAction = TryConvertionAction.SYSTEM_TYPES)
         {
             Check.NotNull(self, $"The argument [type]");
@@ -108,8 +119,11 @@
         /// <summary>
         /// Convert the CSharp type to the Cassandra system CQL type.
         /// </summary>
+        ///
         /// <param name="self">The Type object calling the method.</param>
         /// <returns>The CQL type.</returns>
+        ///
+        /// <exception cref="NullReferenceException">Thrown when the type is invalid or null.</exception>
         private static string TryConvertToSystem([NotNull]this Type self)
         {
             Check.NotNull(self, $"The argument [type]");
@@ -123,9 +137,12 @@
         /// <summary>
         /// Convert the CSharp Lists to the cassandra CQL Lists.
         /// </summary>
+        ///
         /// <param name="self">The Type object calling the method.</param>
         /// <param name="shouldBeFrozen">Define if the type should be treated as a frozen type or not.</param>
         /// <returns>The CQL type.</returns>
+        ///
+        /// <exception cref="NullReferenceException">Thrown when the type is invalid or null.</exception>
         private static string TryConvertToList([NotNull] this Type self, bool shouldBeFrozen)
         {
             Check.NotNull(self, $"The argument [type]");
@@ -168,11 +185,14 @@
         }
 
         /// <summary>
-        /// Convert the CSharp class to the Cassandra frozen User-Defined Type.
+        /// Convert the CSharp class to the Cassandra User-Defined Type.
         /// </summary>
-        /// <param name="self">The CSharp Class.</param>
+        ///
+        /// <param name="self">The Type object calling the method.</param>
         /// <param name="shouldBeFrozen">Define if the type should be treated as a frozen type or not.</param>
         /// <returns>The CQL type.</returns>
+        ///
+        /// <exception cref="NullReferenceException">Thrown when the type is invalid or null.</exception>
         private static string TryConvertToUserDefinedType([NotNull]this Type self, bool shouldBeFrozen)
         {
             Check.NotNull(self, $"The argument [type]");
