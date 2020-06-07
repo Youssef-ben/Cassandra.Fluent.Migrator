@@ -1,9 +1,8 @@
 ﻿namespace Cassandra.Fluent.Migrator.Tests.CassandraFluentMigrator
 {
     using System;
+    using Cassandra.Fluent.Migrator.Common.Configuration;
     using Cassandra.Fluent.Migrator.Helper;
-    using Cassandra.Fluent.Migrator.Helper.Extensions;
-    using Cassandra.Fluent.Migrator.Tests.Configuration;
     using Cassandra.Fluent.Migrator.Tests.Models;
     using Cassandra.Fluent.Migrator.Utils.Exceptions;
     using Xunit;
@@ -31,7 +30,7 @@
         {
             if (this.session is null)
             {
-                this.session = this.GetCassandraSession(KEYSPACE);
+                this.session = this.GetTestCassandraSession(KEYSPACE);
                 this.cfmHelper = new CassandraFluentMigrator(this.session);
             }
         }
@@ -231,7 +230,7 @@
             var type = this.cfmHelper.GetCqlType(typeof(string));
             Assert.Equal("text", type);
 
-            type = this.cfmHelper.GetCqlType(typeof(CfmHelperObject));
+            type = this.cfmHelper.GetCqlType(typeof(CfmHelperObject), true);
             Assert.Equal("frozen<cfmhelperobject>", type);
         }
 

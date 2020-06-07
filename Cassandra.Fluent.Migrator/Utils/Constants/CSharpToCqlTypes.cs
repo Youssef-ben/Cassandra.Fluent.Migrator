@@ -3,14 +3,10 @@
     using System.Collections.Generic;
     using Cassandra.Fluent.Migrator.Utils.Extensions;
 
-    /// <summary>
-    /// Contains the CQL Types and the conversion methods that will be used by this library.
-    /// </summary>
     internal static class CSharpToCqlTypes
     {
         /// <summary>
-        /// Gets the CQL type from the C# Type.
-        /// Define the mapping between the C# and CQL types.
+        /// Define the mapping between the CSharp and CQL types.
         /// </summary>
         internal static Dictionary<string, string> TypesMapping => new Dictionary<string, string>()
         {

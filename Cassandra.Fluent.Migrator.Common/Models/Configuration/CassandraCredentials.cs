@@ -1,4 +1,4 @@
-﻿namespace Cassandra.Fluent.Migrator.Tests.Models.Configuration
+﻿namespace Cassandra.Fluent.Migrator.Common.Models.Configuration
 {
     public class CassandraCredentials
     {

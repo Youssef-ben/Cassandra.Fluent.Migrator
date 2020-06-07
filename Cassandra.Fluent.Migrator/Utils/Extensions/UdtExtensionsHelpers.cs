@@ -11,35 +11,34 @@
     internal static class UdtExtensionsHelpers
     {
         /// <summary>
-        /// Build and execute the CQL statement to create a new type.
+        /// Build and execute the create User-Defined type query statement.
         /// The method automatically get the properties and their types based on the
         /// {TEntity} class.
         /// </summary>
         ///
-        /// <typeparam name="TEntity">The calss where the method should look for the properties and their types.</typeparam>
+        /// <typeparam name="TEntity">The class where the method should look for the properties and their types.</typeparam>
         /// <param name="self">The Cassandra Fluent Migrator.</param>
-        /// <param name="name">The name of the udt.</param>
+        /// <param name="name">The name of the User-Defined type.</param>
+        /// <param name="shouldBeFrozen">Define if the type should be treated as a frozen type or not.</param>
         /// <returns>The Cassandra CQL query.</returns>
         ///
-        /// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
-        internal static async Task<ICassandraFluentMigrator> ExecuteBuildUdtAsync<TEntity>([NotNull]this ICassandraFluentMigrator self, [NotNull] string name)
+        /// <exception cref="NullReferenceException">Thrown when the arguments are empty or null.</exception>
+        internal static async Task<ICassandraFluentMigrator> ExecuteBuildUdtAsync<TEntity>([NotNull]this ICassandraFluentMigrator self, [NotNull] string name, bool shouldBeFrozen)
                where TEntity : class
         {
             Check.NotNull(self, $"The argument [cassandra fluent migrator]");
             Check.NotEmptyNotNull(name, $"The argument [{nameof(name)}]");
 
-            name = name.NormalizeString();
+            var count = 0;
 
             var properties = typeof(TEntity).GetProperties();
-
-            var count = 0;
 
             var query = new StringBuilder(UdtCqlStatements.TYPE_CREATE_STATEMENT.NormalizeString(name));
 
             foreach (var property in properties)
             {
                 var propName = property.Name.NormalizeString();
-                var propType = property.PropertyType.GetCqlType().NormalizeString();
+                var propType = property.PropertyType.GetCqlType(shouldBeFrozen);
 
                 query.Append($"{propName} {propType}");
 
@@ -50,44 +49,46 @@
                 }
             }
 
-            var statement = query.Append(");").ToString();
+            var statement = query
+                .Append(");")
+                .ToString()
+                .NormalizeString();
 
             return await self.ExecuteUdtStatementAsync(statement);
         }
 
         /// <summary>
-        /// Build and excecute the CQL statement to delet th specified type.
+        /// Build and execute the delete User-Defined type query statement.
         /// </summary>
         ///
-        /// <typeparam name="TEntity">The calss where the method should look for the properties and their types.</typeparam>
+        /// <typeparam name="TEntity">The calss where the that represent the User-Defined type.</typeparam>
         /// <param name="self">The Cassandra Fluent Migrator.</param>
-        /// <param name="name">The name of the udt.</param>
+        /// <param name="name">The name of the User-Defined type (Optional: will be taken from the {TEntity} if not specified).</param>
         /// <returns>The Cassandra CQL query.</returns>
         ///
-        /// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
+        /// <exception cref="NullReferenceException">Thrown when the arguments are empty or null.</exception>
         internal static async Task<ICassandraFluentMigrator> ExecuteDeleteUdtAsync<TEntity>([NotNull]this ICassandraFluentMigrator self, [NotNull] string name)
               where TEntity : class
         {
             Check.NotNull(self, $"The argument [cassandra fluent migrator]");
             Check.NotEmptyNotNull(name, $"The argument [{nameof(name)}]");
 
-            // Build Query.
             var query = UdtCqlStatements.TYPE_DROP_STATEMENT.NormalizeString(name);
 
             return await self.ExecuteUdtStatementAsync(query);
         }
 
         /// <summary>
-        /// Build the Add Column Query statement for the User-Defined types and execute it.
+        /// Build and execute the Add Column query statement for the User-Defined types.
         /// </summary>
         ///
         /// <param name="self">The Cassandra Fluent Migrator.</param>
         /// <param name="udt">The name of the User-Defined type.</param>
         /// <param name="column">The name of the column to be added.</param>
-        /// <param name="type">The type of the new column.</param>
+        /// <param name="type">The type of the column.</param>
         /// <returns>The Cassandra CQL query.</returns>
         ///
-        /// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
+        /// <exception cref="NullReferenceException">Thrown when the arguments are empty or null.</exception>
         internal static async Task<ICassandraFluentMigrator> ExecuteAlterUdtAddColumnQuery([NotNull]this ICassandraFluentMigrator self, [NotNull]string udt, [NotNull]string column, [NotNull]string type)
         {
             Check.NotNull(self, $"The argument [cassandra fluent migrator]");
@@ -97,11 +98,12 @@
             Check.NotEmptyNotNull(column, $"The argument [{nameof(column)}]");
 
             var query = UdtCqlStatements.TYPE_ADD_COLUMN_STATEMENT.NormalizeString(udt, column, type);
+
             return await self.ExecuteUdtStatementAsync(query, AppErrorsMessages.TYPE_UDT_COLUMN_EXISTS.NormalizeString(column));
         }
 
         /// <summary>
-        /// Build the Rename Column Query statement for the User-Defined types and execute it.
+        /// Build and execute the Rename Column query statement for the User-Defined types.
         /// </summary>
         ///
         /// <param name="self">The Cassandra Fluent Migrator.</param>
@@ -110,7 +112,7 @@
         /// <param name="target">The new column name.</param>
         /// <returns>The Cassandra CQL query.</returns>
         ///
-        /// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
+        /// <exception cref="NullReferenceException">Thrown when the arguments are empty or null.</exception>
         internal static async Task<ICassandraFluentMigrator> ExecuteAlterUdtRenameColumnQuery([NotNull]this ICassandraFluentMigrator self, [NotNull]string udt, [NotNull]string column, [NotNull]string target)
         {
             Check.NotNull(self, $"The argument [cassandra fluent migrator]");
@@ -126,10 +128,6 @@
 
         private static async Task<ICassandraFluentMigrator> ExecuteUdtStatementAsync([NotNull]this ICassandraFluentMigrator self, [NotNull]string query, [NotNull]string errorMessage = "throw error")
         {
-            Check.NotNull(self, $"The argument [cassandra fluent migrator]");
-            Check.NotEmptyNotNull(query, $"The argument [{nameof(query)}]");
-            Check.NotEmptyNotNull(errorMessage, $"The argument [Expected error message]");
-
             try
             {
                 IStatement statement = new SimpleStatement(query);

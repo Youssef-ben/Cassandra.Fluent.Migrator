@@ -4,16 +4,22 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
     <Authors>Youssef Benhessou</Authors>
-    <Description>Cassandra Fluent Migrator, is a library that offers a set of fluent code and extensions to facilitate the creation and managment of the migrations using code instead of CQL string commands.</Description>
+    <Product>Cassandra Fluent Migrator</Product>
+    <Description>
+      Cassandra Fluent Migrator is a library that offers a set of fluent code and extensions to facilitate the creation and management of the migrations using code instead of CQL commands.
+    </Description>
     <Copyright>GPLv3</Copyright>
     <NeutralLanguage>en</NeutralLanguage>
-    <CodeAnalysisRuleSet>$(SolutionDir)\StyleCopRules.ruleset</CodeAnalysisRuleSet>
-    <PackageProjectUrl>https://github.com/Youssef-ben/Cassandra.Fluent.Migrator</PackageProjectUrl>
-    <PackageIcon>favicon.ico</PackageIcon>
-    <PackageIconUrl />
+    <PackageProjectUrl>https://github.com/Youssef-ben/Cassandra.Fluent.Migrator#readme</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Youssef-ben/Cassandra.Fluent.Migrator</RepositoryUrl>
+    <PackageIcon>cfm.png</PackageIcon>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReleaseNotes>v1.0.0</PackageReleaseNotes>
+    <Version>1.0.0</Version>
     <RepositoryType>Library</RepositoryType>
     <PackageTags>CSharp, Cassandra, Migrations, .NetCore3,</PackageTags>
+
+    <CodeAnalysisRuleSet>..\StyleCopRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='$(Configuration)|AnyCPU'">
@@ -22,6 +28,8 @@
 
   <ItemGroup>
     <PackageReference Include="CassandraCSharpDriver" Version="3.15.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.4" />
     <PackageReference Include="Microsoft.Rest.ClientRuntime.Azure.Authentication" Version="2.4.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
@@ -30,10 +38,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="favicon.ico">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
+    <None Include="../LICENSE" Pack="true" PackagePath="\" />
+    <None Include="../README.md" Pack="true" PackagePath="\" />
+    <None Include="../cfm.png" Pack="true" PackagePath="\" />
   </ItemGroup>
-  
+
 </Project>

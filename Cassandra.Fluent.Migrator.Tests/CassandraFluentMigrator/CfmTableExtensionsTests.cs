@@ -1,9 +1,8 @@
 ﻿namespace Cassandra.Fluent.Migrator.Tests.CassandraFluentMigrator
 {
     using System;
+    using Cassandra.Fluent.Migrator.Common.Configuration;
     using Cassandra.Fluent.Migrator.Helper;
-    using Cassandra.Fluent.Migrator.Helper.Extensions;
-    using Cassandra.Fluent.Migrator.Tests.Configuration;
     using Cassandra.Fluent.Migrator.Tests.Models;
     using Cassandra.Fluent.Migrator.Utils.Exceptions;
     using Xunit;
@@ -26,7 +25,7 @@
         {
             if (this.session is null)
             {
-                this.session = this.GetCassandraSession(KEYSPACE);
+                this.session = this.GetTestCassandraSession(KEYSPACE);
                 this.cfmHelper = new CassandraFluentMigrator(this.session);
             }
         }
@@ -118,11 +117,25 @@
         {
             try
             {
-                await this.cfmHelper.RenamePrimaryColumnAsync(nameof(CfmHelperObject), "Values", "renamedId");
+                await this.cfmHelper.RenamePrimaryColumnAsync(nameof(CfmHelperObject), "Values", "NotImportant");
             }
             catch (InvalidOperationException ex)
             {
                 Assert.Contains("the [values] is not a primary key. you can only rename primary keys!".ToLower(), ex.Message.ToLower());
+            }
+        }
+
+        [Fact]
+        [Priority(4)]
+        public async void RenamePrimaryKey_TargetNameAlreadyExists_Failed()
+        {
+            try
+            {
+                await this.cfmHelper.RenamePrimaryColumnAsync(nameof(CfmHelperObject), "Values", "renamedid");
+            }
+            catch (InvalidOperationException ex)
+            {
+                Assert.Contains("a field of the same name already exists!".ToLower(), ex.Message.ToLower());
             }
         }
 

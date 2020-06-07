@@ -1,4 +1,4 @@
-.PHONY: start stop restart remove clean cqlsh queries help-cassandra
+.PHONY: start stop restart remove clean cqlsh queries cassandra-help
 
 start: ## Start the container if exists. Otherwise it pulls the image and create a new database container.
 	@echo "Building and starting the Cassandra container...."
@@ -24,11 +24,11 @@ remove: stop ## Stops and remove the cassandra container
 
 clean: ## Remove the container and its image.
 	@echo "Cleaning Cassandra databse..."
-	@docker-compose down -v -rmi all
+	@docker-compose down -v --rmi all
 
 cqlsh: ## Start Cassandra {CQLSH} console to query the database.
 	@echo "Starting Cassandra {cqlsh} console..."
-	@docker exec -it $(DB_CONTAINER_NAME) cqlsh
+	@docker exec -it cfm-database cqlsh
 
 queries: ## Show some queries that can be used for tests.
 	@echo "List available keyspaces: DESCRIBE keyspaces;"
@@ -37,7 +37,7 @@ queries: ## Show some queries that can be used for tests.
 	@echo "Query a table data      : SELECT * FROM <table_name>;"
 	@echo "Check if a table exists : SELECT table_name FROM system_schema.tables WHERE keyspace_name='<keyspace_name>' AND table_name='<table_name>';"
 
-help-cassandra: ## Shows the Current Makefile Commands.
+cassandra-help: ## Shows the Current Makefile Commands.
 	@echo "" 
 	@echo "================================= CASSANDRA ================================="
 	@echo "============================================================================="

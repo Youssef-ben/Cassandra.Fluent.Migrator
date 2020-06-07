@@ -11,23 +11,21 @@
     internal static class TableExtensionsHelpers
     {
         /// <summary>
-        /// Build and execute the Add columns query statement.
+        /// Build and execute the Add column query statement.
         /// </summary>
         ///
         /// <param name="self">The Cassandra Fluent Migrator.</param>
         /// <param name="table">The Cassandra table name.</param>
         /// <param name="column">The column that we want to add.</param>
         /// <param name="type">The type of the columns.</param>
-        /// <returns>Nothing.</returns>
+        /// <returns>Cassandra Fluent Migrator.</returns>
+        ///
+        /// <exception cref="NullReferenceException">Thrown when the arguments are empty or null.</exception>
         internal static async Task<ICassandraFluentMigrator> ExecuteCreateColumnQueryAsync([NotNull]this ICassandraFluentMigrator self, [NotNull] string table, [NotNull]string column, [NotNull] string type)
         {
             Check.NotNull(self, $"The argument [table]");
             Check.NotEmptyNotNull(column, $"The argument [{nameof(column)}]");
             Check.NotEmptyNotNull(column, $"The argument [{nameof(type)}]");
-
-            table = table.NormalizeString();
-            column = column.NormalizeString();
-            type = type.NormalizeString();
 
             var query = TableCqlStatements.TABLE_ADD_COLUMN_STATEMENT.NormalizeString(table, column, type);
 
@@ -35,14 +33,16 @@
         }
 
         /// <summary>
-        /// Build the Reanme Column Query statement and execute it.
+        /// Build and execute the Reanme column query statement.
         /// </summary>
         ///
         /// <param name="self">The Cassandra Fluent Migrator.</param>
         /// <param name="table">The Cassandra table name.</param>
-        /// <param name="column">Old Column to rename.</param>
+        /// <param name="column">Old Column to be renamed.</param>
         /// <param name="target">New Column name.</param>
-        /// <returns>Nothing.</returns>
+        /// <returns>Cassandra Fluent Migrator.</returns>
+        ///
+        /// <exception cref="NullReferenceException">Thrown when the arguments are empty or null.</exception>
         internal static async Task<ICassandraFluentMigrator> ExecuteRenameColumnQueryAsync([NotNull]this ICassandraFluentMigrator self, [NotNull]string table, [NotNull]string column, [NotNull]string target)
         {
             Check.NotNull(self, $"The argument [cassandra fluent migrator object]");
@@ -50,23 +50,21 @@
             Check.NotEmptyNotNull(column, $"The argument [old name]");
             Check.NotEmptyNotNull(target, $"The argument [new name]");
 
-            table = table.NormalizeString();
-            column = column.NormalizeString();
-            target = target.NormalizeString();
-
             var query = TableCqlStatements.TABLE_RENAME_COLUMN_STATEMENT.NormalizeString(table, column, target);
 
             return await self.ExecuteStatementAsync(query, AppErrorsMessages.COLUMN_EXISTS_FOR_RENAME.NormalizeString(column, target, self.GetCassandraSession().Keyspace));
         }
 
         /// <summary>
-        /// Build the Drop Column Query statement and execute it.
+        /// Build and execute the Drop column query statement.
         /// </summary>
         ///
         /// <param name="self">The Cassandra Fluent Migrator.</param>
         /// <param name="table">The Cassandra table name.</param>
         /// <param name="column">The Column to be deleted.</param>
-        /// <returns>Nothing.</returns>
+        /// <returns>Cassandra Fluent Migrator.</returns>
+        ///
+        /// <exception cref="NullReferenceException">Thrown when the arguments are empty or null.</exception>
         internal static async Task<ICassandraFluentMigrator> ExecuteDropColumnQueryAsync([NotNull]this ICassandraFluentMigrator self, [NotNull]string table, [NotNull]string column)
         {
             Check.NotNull(self, $"The argument [cassandra fluent migrator object]");
@@ -99,17 +97,13 @@
             return session
                 .Cluster
                 .Metadata
-                .GetTable(session.Keyspace, table)
+                .GetTable(session.Keyspace, table.NormalizeString())
                 .PartitionKeys
-                .Any(x => x.Name == column);
+                .Any(x => x.Name.NormalizeString() == column.NormalizeString());
         }
 
         private static async Task<ICassandraFluentMigrator> ExecuteStatementAsync([NotNull] this ICassandraFluentMigrator self, [NotNull] string query, [NotNull]string errorMessage)
         {
-            Check.NotNull(self, "The argument [cassandra fluent migrator]");
-            Check.NotEmptyNotNull(query, "The argument [query]");
-            Check.NotEmptyNotNull(errorMessage, "The argument [pre-build error message]");
-
             try
             {
                 IStatement statement = new SimpleStatement(query);
