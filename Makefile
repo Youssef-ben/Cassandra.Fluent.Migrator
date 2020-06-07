@@ -2,10 +2,11 @@
 IN THE {Makefiles/} folder.
 .PHONY: help
 
-include ./Makefiles/Cassandra.mk
-include ./Makefiles/Library.mk
+include ./Makefiles/cassandra.mk
+include ./Makefiles/library.mk
+include ./Makefiles/release.mk
 
-help: help-cassandra help-app ## Shows the current Makefile Commands.
+help: cassandra-help app-help release-help ## Shows the current Makefile Commands.
 	@echo "" 
 	@echo "==================================== BASE ==================================="
 	@echo "============================================================================="

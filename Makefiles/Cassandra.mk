@@ -1,4 +1,4 @@
-.PHONY: start stop restart remove clean cqlsh queries help-cassandra
+.PHONY: start stop restart remove clean cqlsh queries cassandra-help
 
 start: ## Start the container if exists. Otherwise it pulls the image and create a new database container.
 	@echo "Building and starting the Cassandra container...."
@@ -37,7 +37,7 @@ queries: ## Show some queries that can be used for tests.
 	@echo "Query a table data      : SELECT * FROM <table_name>;"
 	@echo "Check if a table exists : SELECT table_name FROM system_schema.tables WHERE keyspace_name='<keyspace_name>' AND table_name='<table_name>';"
 
-help-cassandra: ## Shows the Current Makefile Commands.
+cassandra-help: ## Shows the Current Makefile Commands.
 	@echo "" 
 	@echo "================================= CASSANDRA ================================="
 	@echo "============================================================================="
