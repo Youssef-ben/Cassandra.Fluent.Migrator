@@ -3,7 +3,6 @@
     using System;
     using Cassandra.Fluent.Migrator.Common.Configuration;
     using Cassandra.Fluent.Migrator.Helper;
-    using Cassandra.Fluent.Migrator.Helper.Extensions;
     using Cassandra.Fluent.Migrator.Tests.Models;
     using Cassandra.Fluent.Migrator.Utils.Exceptions;
     using Xunit;

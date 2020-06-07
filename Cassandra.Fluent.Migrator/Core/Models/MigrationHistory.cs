@@ -8,8 +8,10 @@
         [PartitionKey]
         public string Name { get; set; }
 
+        [PartitionKey]
         public string Version { get; set; }
 
+        [PartitionKey]
         public DateTime CreatedAt { get; set; }
 
         public string Description { get; set; }

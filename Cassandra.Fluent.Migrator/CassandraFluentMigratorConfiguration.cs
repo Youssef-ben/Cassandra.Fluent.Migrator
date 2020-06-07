@@ -18,8 +18,8 @@
         public static IServiceCollection AddCassandraFluentMigratorServices(this IServiceCollection self)
         {
             return self
-                .AddTransient<ICassandraFluentMigrator, CassandraFluentMigrator>()
-                .AddTransient<ICassandraMigrator, CassandraMigrator>();
+                .AddSingleton<ICassandraFluentMigrator, CassandraFluentMigrator>()
+                .AddSingleton<ICassandraMigrator, CassandraMigrator>();
         }
 
         public static IApplicationBuilder UseCassandraMigration([NotNull]this IApplicationBuilder self)

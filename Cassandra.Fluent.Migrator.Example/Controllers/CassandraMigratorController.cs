@@ -1,17 +1,38 @@
 ﻿namespace Cassandra.Fluent.Migrator.Example.Controllers
 {
-    using Cassandra.Fluent.Migrator.Core.Models;
+    using Cassandra.Fluent.Migrator.Core;
     using Microsoft.AspNetCore.Mvc;
 
     [ApiController]
     [Route("api/migrator")]
     public class CassandraMigratorController : ControllerBase
     {
-        [HttpGet]
-        [Route("")]
-        public IActionResult GetLatestMigration()
+        private readonly ICassandraMigrator migrator;
+
+        public CassandraMigratorController(ICassandraMigrator migrator)
         {
-            return this.Ok(new MigrationHistory());
+            this.migrator = migrator;
+        }
+
+        [HttpGet]
+        [Route("registred")]
+        public IActionResult GetResistredMigrationAsync()
+        {
+            return this.Ok(this.migrator.GetRegistredMigrations());
+        }
+
+        [HttpGet]
+        [Route("applied")]
+        public IActionResult GetAppliedMigrationAsync()
+        {
+            return this.Ok(this.migrator.GetAppliedMigration());
+        }
+
+        [HttpGet]
+        [Route("latest")]
+        public IActionResult GetLatestAppliedMigrationAsync()
+        {
+            return this.Ok(this.migrator.GetLatestMigration());
         }
     }
 }

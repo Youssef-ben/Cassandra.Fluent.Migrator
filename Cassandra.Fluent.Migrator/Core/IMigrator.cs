@@ -1,6 +1,7 @@
 ﻿namespace Cassandra.Fluent.Migrator.Core
 {
     using System;
+    using System.Threading.Tasks;
 
     public interface IMigrator
     {
@@ -10,6 +11,6 @@
 
         string Description { get; }
 
-        void ApplyMigration();
+        Task ApplyMigrationAsync();
     }
 }

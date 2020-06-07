@@ -1,4 +1,4 @@
-﻿namespace Cassandra.Fluent.Migrator.Helper.Extensions
+﻿namespace Cassandra.Fluent.Migrator.Helper
 {
     using System;
     using System.Diagnostics.CodeAnalysis;

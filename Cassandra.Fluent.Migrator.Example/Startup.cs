@@ -24,7 +24,7 @@
             services
                 .AddCassandraSession(this.Configuration)
                 .AddCassandraFluentMigratorServices()
-                .AddMigrations();
+                .AddCassandraMigrations();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -16,7 +16,7 @@ Interface : `ICassandraMigrator`
 
 Handler   : `CassandraMigrator`
 
-This class is the core of the library, it will fetch and execute the migrations.
+This class is the core of the library, it fetchs and execute the migrations.
 
 In other words, The role of this Class is to execute all the registred Migrations from the Dependency Injection container
 by fetching the list and iterate while checking that the migration isn't applied yet.
@@ -24,65 +24,39 @@ by fetching the list and iterate while checking that the migration isn't applied
 The Handler will expose the following methods:
 
 ```CSharp
-/**
-* Start the Migration process.
-*
-*  Should fetch the Migrators from the DI.
-*  Should fetch the Applied migration from the DB and organize them by version.
-*  Loop on the Migrators and check if we need to apply the migration.
-*    - If yes, execute the Migrator method `ApplyMigration[Async]`.
-*    - If not, skip with a message.
-*  If the table [MigrationHistory] doesn't exists it should create it before.
-*/
-Migrate();
-MigrateAsync();
+/// <summary>
+/// Start the migration process.
+///
+/// The method fetch the registred migrations from the {Services Provider} of the app.
+/// Before appling a migration, the method checks if its already applied, If True, it skipps
+/// the migration otherwise applies it using the {ApplyMigration()} of the Migration.
+/// </summary>
+///
+/// <returns>Count of the applied migrations.</returns>
+internal int Migrate();
 
-/**
-* Get the latest migration from the database
-*/
-GetLatestMigration();
-GetLatestMigrationAsync();
+/// <summary>
+/// Get the latest migration that was applied to the schema.
+/// </summary>
+///
+/// <returns>Migration history details.</returns>
+MigrationHistory GetLatestMigration();
 
-/**
-* Get the migrations from the the Dependency Injection `ServiceProvider`.
-* Sort the list by version.
-*/
-GetMigrations();
-GetMigrationsAsync();
+/// <summary>
+/// Gets the list of the registred migrations from the app {services provider}.
+/// The migrations are automatically sorted older to latest.
+/// </summary>
+///
+/// <returns>List of migrations.</returns>
+ICollection<IMigrator> GetRegistredMigrations();
 
-/**
-* Get The applied migration from the database.
-* Sort the list by version.
-*/
-GetAppliedMigrations();
-GetAppliedMigrationsAsync()
-```
-
-* This class will have its internal helper
-
-```CSharp
-/**
-* Set the Cassandra Session and KeySpace.
-* Will Create [MigrationsHistory] table if not exists.
-* Note :
-*     - Table Scheme : [MigrationHistory: {Name, Version, CreateAt, Description}
-*/
-InitFluentCassandraMigrator();
-InitFluentCassandraMigratorAsync();
-
-/**
-* Validate that the Target version is a valid version.
-* Checks if we should apply the migration.
-*/
-ShouldApplyMigration(IMigrator migration);
-ShouldApplyMigrationAsync(IMigrator migration);
-
-/**
-* Save the Migration Data in the database.
-*     - Create New Entry for the Migration in the {MigrationHistory}.
-*/
-UpdateMigrationHistory(SchemeDetails);
-UpdateMigrationHistoryAsync(SchemeDetails);
+/// <summary>
+/// Gets the list of the applied migrations from the databse.
+/// The migrations are automatically sorted latest to older.
+/// </summary>
+///
+/// <returns>List of migrations.</returns>
+ICollection<MigrationHistory> GetAppliedMigration();
 ```
 
 ### Migrator Interface
@@ -131,8 +105,6 @@ This Class should be called in the constructor of the user migration and should 
 it define the following methods:
 
 _**Note:** it's recomended to use strings instead of `nameof(...)` when using the migration methods this will allow to keep a certain consistency in your migrations._
-
-_**Note:** the `[...]` represent optional parameter_
 
 ```CSharp
 /// <summary>
@@ -377,33 +349,4 @@ AlterUdtDeleteColumnAsync("udt", "field");
 
 // IMPORTANT: Alter Column is no longer supported in Cassandra v3.x
 AlterUdtAlterColumnAsync("udt", "field", ["Type"]);
-```
-
-* `Materialized View:` Set of methods to handle the [Creation/Alter/Rename/Delete] of a Materialized View.
-
-_`Note:` it's prefered to delete and create the view with the specief values columns and configuration_
-
-```CSharp
-/*
-* Create a new Materialized View if not exists. Otherwise it does nothing.
-* Note :
-*    - PrimaryKeyFieldName : The field that will be a primary key for the View. (Required)
-*    - SecondaryKeyFieldName: The field that will be a secondary key. Will be ignored if empty. (Optional)
-*    - ClusterKeyFieldName: The field that will be a cluster key. Will be ignored if empty. (Optional)
-*    - ViewName : If the field is {Null || Empty} it will take the Entity name.
-*/
-CreateViewAsync("ViewName", "PrimaryKeyFieldName", "SecondaryKeyFieldName", "ClusterKeyFieldName");
-CreateViewAsync("ViewName", "PrimaryKeyFieldName", "SecondaryKeyFieldName");
-CreateViewAsync("ViewName", "PrimaryKeyFieldName");
-CreateViewAsync("PrimaryKeyFieldName", "SecondaryKeyFieldName", "ClusterKeyFieldName");
-CreateViewAsync("PrimaryKeyFieldName", "SecondaryKeyFieldName");
-CreateViewAsync("PrimaryKeyFieldName");
-
-/*
-* Delete the Materialized View if exists. Otherwise it does nothing.
-* Note :
-*    - If the {ViewName: [Null || Empty]} the function will take the Entity name.
-*/
-DropViewAsync("ViewName");
-DropViewAsync();
 ```
