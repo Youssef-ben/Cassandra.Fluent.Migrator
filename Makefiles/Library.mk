@@ -1,4 +1,4 @@
-.PHONY: restore build clear-build test package help
+.PHONY: restore build test clear-build app-help
 
 restore: ## Restore the project dependencies.
 	@echo "Restoring the project dependencies...."
@@ -12,9 +12,6 @@ test: ## Run the library tests.
 	@echo "Testing the library..."
 	dotnet test
 
-package: build test ## Create NuGet package.
-	@echo "Packaging the library..."
-
 clean-build: ## Clean the project Build.
 	@echo "cleanning the project...."
 	@rm -rf ./Cassandra.Fluent.Migrator/bin/
@@ -22,7 +19,7 @@ clean-build: ## Clean the project Build.
 	@rm -rf ./Cassandra.Fluent.Migrator.Tests/bin/
 	@rm -rf ./Cassandra.Fluent.Migrator.Tests/obj/
 
-help-app: ## Shows the current Makefile Commands.
+app-help: ## Shows the current Makefile Commands.
 	@echo "" 
 	@echo "==================================== APP ===================================="
 	@echo "============================================================================="
