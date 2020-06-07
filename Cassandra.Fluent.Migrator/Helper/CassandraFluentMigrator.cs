@@ -58,7 +58,7 @@
                 .Metadata
                 .GetTable(this.cassandraKeyspace, table.NormalizeString())
                 .TableColumns
-                .Any(x => x.Name == column.NormalizeString());
+                .Any(x => x.Name.NormalizeString() == column.NormalizeString());
         }
 
         public bool DoesUdtExists([NotNull]string udt)
