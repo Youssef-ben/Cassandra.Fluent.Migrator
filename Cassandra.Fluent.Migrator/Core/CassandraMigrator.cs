@@ -19,11 +19,17 @@
         private readonly string keyspace;
         private bool showLog = true;
 
-        public CassandraMigrator(IServiceProvider serviceProvider, ILogger<CassandraMigrator> logger, ISession session)
+        public CassandraMigrator(IServiceProvider serviceProvider, ILogger<CassandraMigrator> logger)
         {
             this.serviceProvider = serviceProvider;
             this.logger = logger;
-            this.cassandraSession = session;
+
+            this.cassandraSession = this.serviceProvider.GetService<ISession>();
+            if (this.cassandraSession is null)
+            {
+                throw new NullReferenceException($"The Cassandra session was not found in the service provider!");
+            }
+
             this.keyspace = this.cassandraSession.Keyspace;
 
             this.logger.LogInformation("Initializing the Cassandra Migrator.");
@@ -54,7 +60,7 @@
                 .ToList();
         }
 
-        public ICollection<MigrationHistory> GetAppliedMigration()
+        public ICollection<MigrationHistory> GetAppliedMigrations()
         {
             if (this.showLog)
             {
@@ -82,14 +88,14 @@
 
             this.showLog = false;
 
-            var migrations = this.GetAppliedMigration();
+            var migrations = this.GetAppliedMigrations();
 
             this.showLog = true;
 
             return migrations.FirstOrDefault();
         }
 
-        int ICassandraMigrator.Migrate()
+        public int Migrate()
         {
             this.logger.LogInformation("Starting the migration process.");
             var count = 0;

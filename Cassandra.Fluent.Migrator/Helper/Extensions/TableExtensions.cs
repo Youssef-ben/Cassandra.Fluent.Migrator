@@ -47,11 +47,12 @@
         /// <param name="self">The instance of the Cassandra Fluent Migrator helper.</param>
         /// <param name="table">The table to which we want to add the new column.</param>
         /// <param name="column">The new column.</param>
+        /// <param name="shouldBeFrozen">Define if the type should be treated as a frozen type or not.</param>
         /// <returns>The Cassandra Fluent Migrator helper.</returns>
         ///
         /// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
         /// <exception cref="ObjectNotFoundException">Thrown when the table doesn't exists.</exception>
-        public static async Task<ICassandraFluentMigrator> AddColumnAsync<Table>([NotNull]this ICassandraFluentMigrator self, [NotNull] string table, [NotNull] string column)
+        public static async Task<ICassandraFluentMigrator> AddColumnAsync<Table>([NotNull]this ICassandraFluentMigrator self, [NotNull] string table, [NotNull] string column, bool shouldBeFrozen = false)
             where Table : class
         {
             // Validate the parameters.
@@ -60,7 +61,7 @@
             Check.NotEmptyNotNull(column, $"The argument [{nameof(column)}]");
 
             // Get the type.
-            var typeName = self.GetColumnType<Table>(column);
+            var typeName = self.GetColumnType<Table>(column, shouldBeFrozen);
 
             return await self.ExecuteAddColumnAsync(table, column, typeName);
         }
