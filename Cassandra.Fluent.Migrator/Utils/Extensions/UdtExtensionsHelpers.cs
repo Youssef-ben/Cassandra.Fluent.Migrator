@@ -19,10 +19,11 @@
         /// <typeparam name="TEntity">The calss where the method should look for the properties and their types.</typeparam>
         /// <param name="self">The Cassandra Fluent Migrator.</param>
         /// <param name="name">The name of the udt.</param>
+        /// <param name="shouldBeFrozen">Define if the type should be treated as a frozen type or not.</param>
         /// <returns>The Cassandra CQL query.</returns>
         ///
         /// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
-        internal static async Task<ICassandraFluentMigrator> ExecuteBuildUdtAsync<TEntity>([NotNull]this ICassandraFluentMigrator self, [NotNull] string name)
+        internal static async Task<ICassandraFluentMigrator> ExecuteBuildUdtAsync<TEntity>([NotNull]this ICassandraFluentMigrator self, [NotNull] string name, bool shouldBeFrozen)
                where TEntity : class
         {
             Check.NotNull(self, $"The argument [cassandra fluent migrator]");
@@ -39,7 +40,7 @@
             foreach (var property in properties)
             {
                 var propName = property.Name.NormalizeString();
-                var propType = property.PropertyType.GetCqlType().NormalizeString();
+                var propType = property.PropertyType.GetCqlType(shouldBeFrozen).NormalizeString();
 
                 query.Append($"{propName} {propType}");
 
