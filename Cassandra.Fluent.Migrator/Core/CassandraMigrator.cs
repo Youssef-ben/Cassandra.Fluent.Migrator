@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using Cassandra.Data.Linq;
     using Cassandra.Fluent.Migrator.Core.Models;
     using Microsoft.Extensions.DependencyInjection;
@@ -14,9 +13,11 @@
         private readonly IServiceProvider serviceProvider;
         private readonly ILogger<CassandraMigrator> logger;
         private readonly ISession cassandraSession;
-        private readonly string keyspace;
 
         private readonly Table<MigrationHistory> migrationHistory;
+
+        private readonly string keyspace;
+        private bool showLog = true;
 
         public CassandraMigrator(IServiceProvider serviceProvider, ILogger<CassandraMigrator> logger, ISession session)
         {
@@ -32,69 +33,87 @@
             this.cassandraSession.CreateKeyspaceIfNotExists(this.keyspace);
 
             // Ensure that the Migration table exists.
-            this.logger.LogDebug("Making sure that the migration history table exusts in the keyspace...");
+            this.logger.LogDebug("Making sure that the migration history table exists in the keyspace...");
             this.migrationHistory = new Table<MigrationHistory>(this.cassandraSession);
             this.migrationHistory.CreateIfNotExists();
         }
 
-        public MigrationHistory GetLatestMigration()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<MigrationHistory> GetLatestMigrationAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public ICollection<IMigrator> GetMigrations()
+        public ICollection<IMigrator> GetRegistredMigrations()
         {
             this.logger.LogDebug("Fetching the registred migrations from the internal service provider...");
             var migrations = this.serviceProvider.GetService<IEnumerable<IMigrator>>();
 
             if (migrations is null)
             {
+                this.logger.LogWarning("Couldn't find any migration to apply!");
                 migrations = new List<IMigrator>();
             }
 
-            return migrations.ToList();
-        }
-
-        public Task<ICollection<MigrationHistory>> GetMigrationsAsync()
-        {
-            throw new NotImplementedException();
+            return migrations
+                .OrderBy(x => x.Version)
+                .ToList();
         }
 
         public ICollection<MigrationHistory> GetAppliedMigration()
         {
-            throw new NotImplementedException();
+            if (this.showLog)
+            {
+                this.logger.LogDebug("Fetching the applied migrations from the database...");
+            }
+
+            var result = this
+                .migrationHistory
+                .Execute()
+                .ToList();
+
+            if (!result.Any())
+            {
+                return new List<MigrationHistory>();
+            }
+
+            return result
+                .OrderByDescending(x => x.Version)
+                .ToList();
         }
 
-        public Task<ICollection<MigrationHistory>> GetAppliedMigrationAsync()
+        public MigrationHistory GetLatestMigration()
         {
-            throw new NotImplementedException();
+            this.logger.LogDebug("Fetching the last applied migration from the database...");
+
+            this.showLog = false;
+
+            var migrations = this.GetAppliedMigration();
+
+            this.showLog = true;
+
+            return migrations.FirstOrDefault();
         }
 
-        Task<MigrationHistory> ICassandraMigrator.GetLatestMigrationAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        MigrationHistory ICassandraMigrator.GetLatestMigration()
-        {
-            throw new NotImplementedException();
-        }
-
-        void ICassandraMigrator.Migrate()
+        int ICassandraMigrator.Migrate()
         {
             this.logger.LogInformation("Starting the migration process.");
+            var count = 0;
 
-            var migrations = this.GetMigrations();
-
-            foreach (var migration in migrations)
+            foreach (var migration in this.GetRegistredMigrations())
             {
-                migration.ApplyMigration();
+                this.logger.LogDebug($"Checking if the migration [{migration.Name}] should be applied...");
+                if (!this.ShouldApplyMigration(migration))
+                {
+                    this.logger.LogWarning($"SKIPPING the migration [{migration.Name}], already applied, ...");
+                    continue;
+                }
+
+                this.logger.LogDebug($"Executing the migration [{migration.Name}]...");
+                migration.ApplyMigrationAsync().GetAwaiter().GetResult();
+
+                this.logger.LogDebug("Updating the migration history....");
+                this.UpdateMigrationHistory(this.migrationHistory, migration);
+
+                count++;
             }
+
+            this.logger.LogInformation($"The Migration process is done. Migration(s) applied [{count}].");
+            return count;
         }
     }
 }

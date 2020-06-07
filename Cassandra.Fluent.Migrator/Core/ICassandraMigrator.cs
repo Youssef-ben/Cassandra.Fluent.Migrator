@@ -1,28 +1,23 @@
 ﻿namespace Cassandra.Fluent.Migrator.Core
 {
     using System.Collections.Generic;
-    using System.Threading.Tasks;
     using Cassandra.Fluent.Migrator.Core.Models;
 
     public interface ICassandraMigrator
     {
         /// <summary>
         /// Start the migration process.
+        ///
         /// The method fetch the registred migrations from the {Services Provider} of the app.
-        /// Before appling a migration, the method checks if already applied, If True, it skipps
+        /// Before appling a migration, the method checks if its already applied, If True, it skipps
         /// the migration otherwise applies it using the {ApplyMigration()} of the Migration.
         /// </summary>
-        internal void Migrate();
-
-        /// <summary>
-        /// Get the latest migration that applied to the schema.
-        /// </summary>
         ///
-        /// <returns>Migration history details.</returns>
-        Task<MigrationHistory> GetLatestMigrationAsync();
+        /// <returns>Count of the applied migrations.</returns>
+        internal int Migrate();
 
         /// <summary>
-        /// Get the latest migration that applied to the schema.
+        /// Get the latest migration that was applied to the schema.
         /// </summary>
         ///
         /// <returns>Migration history details.</returns>
@@ -30,27 +25,15 @@
 
         /// <summary>
         /// Gets the list of the registred migrations from the app {services provider}.
+        /// The migrations are automatically sorted older to latest.
         /// </summary>
         ///
         /// <returns>List of migrations.</returns>
-        Task<ICollection<MigrationHistory>> GetMigrationsAsync();
-
-        /// <summary>
-        /// Gets the list of the registred migrations from the app {services provider}.
-        /// </summary>
-        ///
-        /// <returns>List of migrations.</returns>
-        ICollection<IMigrator> GetMigrations();
+        ICollection<IMigrator> GetRegistredMigrations();
 
         /// <summary>
         /// Gets the list of the applied migrations from the databse.
-        /// </summary>
-        ///
-        /// <returns>List of migrations.</returns>
-        Task<ICollection<MigrationHistory>> GetAppliedMigrationAsync();
-
-        /// <summary>
-        /// Gets the list of the applied migrations from the databse.
+        /// The migrations are automatically sorted latest to older.
         /// </summary>
         ///
         /// <returns>List of migrations.</returns>
