@@ -24,15 +24,18 @@ PM> Install-Package Cassandra.Fluent.Migrator
 
 ### Documentations
 
-* [Wikipage:]() Full documentation for the library.
-* [Cassandra Migrator:]() The core class of the library.
-* [Cassandra Fluent Migrator:]() The migration helper class.
-* [Migrator interface:]() The base properties and method that the migrations should implement.
-* [Example:]() An example on how to use the library.
+* [Wikipage:](https://github.com/Youssef-ben/Cassandra.Fluent.Migrator/wiki) Full documentation for the library.
+* [Cassandra Migrator:](https://github.com/Youssef-ben/Cassandra.Fluent.Migrator/wiki/Cassandra-Migrator) The core class of the library.
+* [Cassandra Fluent Migrator:](https://github.com/Youssef-ben/Cassandra.Fluent.Migrator/wiki/Cassandra-Fluent-Migrator) The migration helper class.
+* [Migrator interface:](https://github.com/Youssef-ben/Cassandra.Fluent.Migrator/wiki/Migrator-Interface) The base properties and method that the migrations should implement.
+* [Example:](https://github.com/Youssef-ben/Cassandra.Fluent.Migrator/wiki/Example) An example on how to use the library.
+* [Supported Types:](https://github.com/Youssef-ben/Cassandra.Fluent.Migrator/wiki/Supported-Types) List of supported types.
 
 ### Basic Usage
 
 * **Migration class**
+
+In your project create a migration class that implements the `IMigrator` Interface as follow:
 
 ```C#
 public class InitialMigration : IMigrator
@@ -81,7 +84,7 @@ public void ConfigureServices(IServiceCollection services)
 {
     services.AddControllers();
 
-    // Custom method that you can create to initilize the cassandra {ISession}.
+    // Custom method that you can create to initialize the Cassandra {ISession}.
     services.AddCassandraSession(this.Configuration);
 
     // Register the migrations

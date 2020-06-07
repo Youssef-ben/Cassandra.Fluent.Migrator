@@ -34,7 +34,7 @@
         bool DoesTableExists([NotNull]string table);
 
         /// <summary>
-        /// Validate that the column exits in the specified table.
+        /// Validate that the column exists in the specified table.
         ///
         /// <para>Before validating that the columns exists, the method first validate that the table exists.</para>
         /// </summary>
@@ -58,7 +58,7 @@
         bool DoesUdtExists([NotNull]string udt);
 
         /// <summary>
-        /// Validate that thecolumn exits in the specified User-Defined type.
+        /// Validate that the column exists in the specified User-Defined type.
         ///
         /// <para>Before validating that the columns exists, the method first validate that the User-Defined type exists.</para>
         /// </summary>
@@ -82,7 +82,7 @@
         bool DoesMaterializedViewExists([NotNull]string view);
 
         /// <summary>
-        /// Validate that the column exits in the specified Materialized view.
+        /// Validate that the column exists in the specified Materialized view.
         ///
         /// <para>Before validating that the columns exists, the method first validate that the Materialized view exists.</para>
         /// </summary>

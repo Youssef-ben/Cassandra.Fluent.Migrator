@@ -14,7 +14,7 @@
     public static partial class CfmExtensions
     {
         /// <summary>
-        /// Adds the specified column to the targeted table only if the column doesn't exists.
+        /// Adds the specified column to the targeted table only if the column doesn't exist.
         /// </summary>
         ///
         /// <param name="self">The instance of the Cassandra Fluent Migrator helper.</param>
@@ -39,7 +39,7 @@
         }
 
         /// <summary>
-        /// Adds the specified column to the targeted table only if the column doesn't exists.
+        /// Adds the specified column to the targeted table only if the column doesn't exist.
         ///
         /// <para>Note: The method automatically resolve the type of the column.</para>
         /// </summary>

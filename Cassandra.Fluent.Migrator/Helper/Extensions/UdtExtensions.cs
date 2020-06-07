@@ -72,7 +72,7 @@
         }
 
         /// <summary>
-        /// Alter the specified Uder-Defined type by adding a new column only if it doesn't exists.
+        /// Alter the specified User-Defined type by adding a new column only if it doesn't exist.
         /// If the UDT doesn't exists, the method throws an exception.
         /// If the column exists, the method skips the action.
         /// </summary>
@@ -103,7 +103,7 @@
         }
 
         /// <summary>
-        /// Alter the specified Uder-Defined type by adding a new column only if it doesn't exists.
+        /// Alter the specified User-Defined type by adding a new column only if it doesn't exist.
         /// If the UDT doesn't exists, the method throws an exception.
         /// If the column exists, the method skips the action.
         /// </summary>
