@@ -1,0 +1,26 @@
+version: "3.8"
+
+networks:
+    cassandra-network:
+        name: cfm-database
+        driver: bridge
+
+volumes:
+    cassandra-volume:
+        name: cfm-database
+
+services:
+    cfm-database:
+        container_name: cfm-database
+        image: cassandra:latest
+
+        environment: 
+            CASSANDRA_CLUSTER_NAME: cfm-cluster
+
+        networks: 
+            - cassandra-network
+            
+        ports:
+            - 9042:9042
+        volumes: 
+            - cassandra-volume:/var/lib/cassandra
