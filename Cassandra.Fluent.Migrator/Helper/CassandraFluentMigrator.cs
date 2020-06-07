@@ -121,19 +121,19 @@
                 .Any(x => x.Key.NormalizeString() == column.NormalizeString());
         }
 
-        public string GetCqlType([NotNull]Type type)
+        public string GetCqlType([NotNull]Type type, bool shouldBeFrozen = false)
         {
             Check.NotNull(type, $"The argument [{nameof(type)}]");
 
-            return type.GetCqlType();
+            return type.GetCqlType(shouldBeFrozen);
         }
 
-        public string GetColumnType<TEntity>([NotNull]string column)
+        public string GetColumnType<TEntity>([NotNull]string column, bool shouldBeFrozen = false)
             where TEntity : class
         {
             Check.NotEmptyNotNull(column, $"The argument [{nameof(column)}]");
 
-            return typeof(TEntity).GetCqlType(column);
+            return typeof(TEntity).GetCqlType(column, shouldBeFrozen);
         }
     }
 }

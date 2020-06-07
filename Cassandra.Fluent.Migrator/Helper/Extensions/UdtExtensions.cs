@@ -24,10 +24,11 @@
         /// <typeparam name="TEntity">The calss where the method should look for the properties and their types.</typeparam>
         /// <param name="self">The Cassandra Fluent Migrator.</param>
         /// <param name="name">The name of the udt (Optional).</param>
+        /// <param name="shouldBeFrozen">Define if the type should be treated as a frozen type or not.</param>
         /// <returns>The Cassandra CQL query.</returns>
         ///
         /// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
-        public static async Task<ICassandraFluentMigrator> CreateUserDefinedTypeAsync<TEntity>([NotNull]this ICassandraFluentMigrator self, string name = default)
+        public static async Task<ICassandraFluentMigrator> CreateUserDefinedTypeAsync<TEntity>([NotNull]this ICassandraFluentMigrator self, string name = default, bool shouldBeFrozen = false)
             where TEntity : class
         {
             Check.NotNull(self, $"The argument [cassandra fluent migrator]");
@@ -41,7 +42,7 @@
             }
 
             // Execute Query.
-            return await self.ExecuteBuildUdtAsync<TEntity>(name);
+            return await self.ExecuteBuildUdtAsync<TEntity>(name, shouldBeFrozen);
         }
 
         /// <summary>
@@ -83,11 +84,12 @@
         /// <param name="udt">The name of the User-Defined type.</param>
         /// <param name="column">The name of the column to be added.</param>
         /// <param name="type">The type of the new column.</param>
+        /// <param name="shouldBeFrozen">Define if the type should be treated as a frozen type or not.</param>
         /// <returns>The Cassandra CQL query.</returns>
         ///
         /// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
         /// <exception cref="ObjectNotFoundException">Thrown when the udt doesn't exists.</exception>
-        public static async Task<ICassandraFluentMigrator> AlterUdtAddColumnAsync([NotNull]this ICassandraFluentMigrator self, [NotNull]string udt, string column, Type type)
+        public static async Task<ICassandraFluentMigrator> AlterUdtAddColumnAsync([NotNull]this ICassandraFluentMigrator self, [NotNull]string udt, string column, Type type, bool shouldBeFrozen = false)
         {
             Check.NotNull(self, $"The argument [cassandra fluent migrator]");
             Check.NotNull(type, $"The argument [{nameof(type)}]");
@@ -101,7 +103,7 @@
                 return self;
             }
 
-            return await self.ExecuteAlterUdtAddColumnQuery(udt, column, type.GetCqlType());
+            return await self.ExecuteAlterUdtAddColumnQuery(udt, column, type.GetCqlType(shouldBeFrozen));
         }
 
         /// <summary>

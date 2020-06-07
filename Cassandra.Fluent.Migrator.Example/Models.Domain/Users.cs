@@ -1,6 +1,7 @@
 ﻿namespace Cassandra.Fluent.Migrator.Example.Models.Domain
 {
     using System;
+    using System.Collections.Generic;
     using Cassandra.Mapping.Attributes;
 
     public class Users
@@ -16,6 +17,7 @@
 
         public string Language { get; set; }
 
-        public Address Address { get; set; }
+        [Frozen]
+        public IEnumerable<Address> Address { get; set; }
     }
 }

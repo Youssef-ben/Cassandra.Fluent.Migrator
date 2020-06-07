@@ -94,16 +94,18 @@
         /// Get the Cassandra CQL type equivalent to the specified CSharp type.
         /// </summary>
         /// <param name="type">The CSharp type to be converted.</param>
+        /// <param name="shouldBeFrozen">Define if the type should be treated as a frozen type or not.</param>
         /// <returns>Return string value containing the Cassandra CQL type.</returns>
-        string GetCqlType([NotNull]Type type);
+        string GetCqlType([NotNull]Type type, bool shouldBeFrozen = false);
 
         /// <summary>
         /// Get the Cassandra CQL type of the specified column.
         /// </summary>
         /// <typeparam name="TEntity">The class where we need to look for the column type.</typeparam>
         /// <param name="column">The column that we want to search for.</param>
+        /// <param name="shouldBeFrozen">Define if the type should be treated as a frozen type or not.</param>
         /// <returns>Return string value of the Cassandra CQL type.</returns>
-        string GetColumnType<TEntity>([NotNull]string column)
+        string GetColumnType<TEntity>([NotNull]string column, bool shouldBeFrozen = false)
             where TEntity : class;
     }
 }

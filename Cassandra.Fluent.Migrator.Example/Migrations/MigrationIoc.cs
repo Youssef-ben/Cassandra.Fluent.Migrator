@@ -11,7 +11,8 @@
                 .AddTransient<IMigrator, InitialMigration>()
                 .AddTransient<IMigrator, AddActiveColumnToUsersMigration>()
                 .AddTransient<IMigrator, AnotherChangesMigration>()
-                .AddTransient<IMigrator, YetAnotherChangesMigration>();
+                .AddTransient<IMigrator, YetAnotherChangesMigration>()
+                .AddTransient<IMigrator, AddingNewTypeMigration>();
         }
     }
 }
