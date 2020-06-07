@@ -1,6 +1,7 @@
 ﻿namespace Cassandra.Fluent.Migrator.Common.Configuration
 {
     using System.Diagnostics.CodeAnalysis;
+    using Cassandra.Fluent.Migrator.Common.Configuration.TestsServiceProvider;
     using Cassandra.Fluent.Migrator.Common.Models.Configuration;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -39,6 +40,20 @@
             return SettingsExtensions
                 .GetCassandraSettings()
                 .BuildClusterAndConnect(keyspace);
+        }
+
+        /// <summary>
+        /// Sets the test in memory Service provider and returns a new instance of the Cassandra Migrator.
+        /// </summary>
+        /// <typeparam name="TClass">The Class calling this method.</typeparam>
+        /// <param name="self">The class calling this method.</param>
+        /// <returns>Return a new Instance of the Cassandra Migrator.</returns>
+        public static InMemoryServiceProvider GetTestInMemoryProvider<TClass>([NotNull]this TClass self)
+            where TClass : class
+        {
+            Check.NotNull(self, "The argument [TClass]");
+
+            return new InMemoryServiceProvider();
         }
 
         /// <summary>

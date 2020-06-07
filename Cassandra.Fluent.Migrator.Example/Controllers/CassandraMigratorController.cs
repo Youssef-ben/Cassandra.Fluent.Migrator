@@ -25,7 +25,7 @@
         [Route("applied")]
         public IActionResult GetAppliedMigrationAsync()
         {
-            return this.Ok(this.migrator.GetAppliedMigration());
+            return this.Ok(this.migrator.GetAppliedMigrations());
         }
 
         [HttpGet]

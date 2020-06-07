@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using Cassandra.Fluent.Migrator.Core.Models;
+    using Microsoft.AspNetCore.Builder;
 
     public interface ICassandraMigrator
     {
@@ -10,11 +11,15 @@
         ///
         /// The method fetch the registred migrations from the {Services Provider} of the app.
         /// Before appling a migration, the method checks if its already applied, If True, it skipps
-        /// the migration otherwise applies it using the {ApplyMigration()} of the Migration.
+        /// the migration otherwise applies it using the {ApplyMigration()} of the current migration.
+        ///
+        /// <para>NOTE: Use with caution.
+        /// It's recommended to apply the migration at the project startup using the
+        /// <see cref="CassandraFluentMigratorConfiguration.UseCassandraMigration(IApplicationBuilder)"/> method.</para>
         /// </summary>
         ///
         /// <returns>Count of the applied migrations.</returns>
-        internal int Migrate();
+        int Migrate();
 
         /// <summary>
         /// Get the latest migration that was applied to the schema.
@@ -37,6 +42,6 @@
         /// </summary>
         ///
         /// <returns>List of migrations.</returns>
-        ICollection<MigrationHistory> GetAppliedMigration();
+        ICollection<MigrationHistory> GetAppliedMigrations();
     }
 }

@@ -230,7 +230,7 @@
             var type = this.cfmHelper.GetCqlType(typeof(string));
             Assert.Equal("text", type);
 
-            type = this.cfmHelper.GetCqlType(typeof(CfmHelperObject));
+            type = this.cfmHelper.GetCqlType(typeof(CfmHelperObject), true);
             Assert.Equal("frozen<cfmhelperobject>", type);
         }
 

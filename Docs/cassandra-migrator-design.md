@@ -200,16 +200,18 @@ bool DoesMaterializedViewColumnExists([NotNull]string view, [NotNull] string col
 /// Get the Cassandra CQL type equivalent to the specified CSharp type.
 /// </summary>
 /// <param name="type">The CSharp type to be converted.</param>
+/// <param name="shouldBeFrozen">Define if the type should be treated as a frozen type or not.</param>
 /// <returns>Return string value containing the Cassandra CQL type.</returns>
-string GetCqlType([NotNull]Type type);
+string GetCqlType([NotNull]Type type, bool shouldBeFrozen = false);
 
 /// <summary>
 /// Get the Cassandra CQL type of the specified column.
 /// </summary>
 /// <typeparam name="TEntity">The class where we need to look for the column type.</typeparam>
 /// <param name="column">The column that we want to search for.</param>
+/// <param name="shouldBeFrozen">Define if the type should be treated as a frozen type or not.</param>
 /// <returns>Return string value of the Cassandra CQL type.</returns>
-string GetColumnType<TEntity>([NotNull]string column)
+string GetColumnType<TEntity>([NotNull]string column, bool shouldBeFrozen = false)
     where TEntity : class;
 ```
 
@@ -226,12 +228,13 @@ string GetColumnType<TEntity>([NotNull]string column)
 /// <param name="table">The table to which we want to add the new column.</param>
 /// <param name="column">The new column.</param>
 /// <param name="type">The new column type.</param>
+/// <param name="shouldBeFrozen">Define if the type should be treated as a frozen type or not.</param>
 /// <returns>The instance of the Cassandra Fluent Migrator helper.</returns>
 ///
 /// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
 /// <exception cref="ObjectNotFoundException">Thrown when the table doesn't exists.</exception>
-Task<ICassandraFluentMigrator> AddColumnAsync(string table, string column, Type type);
-Task<ICassandraFluentMigrator> AddColumnAsync<TTableClass>(string table, string column);
+Task<ICassandraFluentMigrator> AddColumnAsync(string table, string column, Type type, bool shouldBeFrozen = false);
+Task<ICassandraFluentMigrator> AddColumnAsync<TTableClass>(string table, string column, bool shouldBeFrozen = false);
 
 /// <summary>
 /// Rename the specified column in the targeted table only if the column exists.
@@ -270,12 +273,6 @@ Task<ICassandraFluentMigrator> AlterColumnAsync("table", "field", ["Type"]);
 * `User Defined Types:` Sets of methods to handle the [Creation/Alter/Rename/Delete] of a User-Defined Type.
 
 ```CSharp
-/*
-* Create a new User-Defined Type if not exists. Otherwise it does nothing.
-* Note :
-*    - If the [UdtName: {Null || Empty}] the function will take the Entity name.
-*/
-
 /// <summary>
 /// Create the new User-Defined type by building and generating a query
 /// based on the generic class fields and types.
@@ -287,10 +284,11 @@ Task<ICassandraFluentMigrator> AlterColumnAsync("table", "field", ["Type"]);
 /// <typeparam name="TEntity">The calss where the method should look for the properties and their types.</typeparam>
 /// <param name="self">The Cassandra Fluent Migrator.</param>
 /// <param name="name">The name of the udt (Optional).</param>
+/// <param name="shouldBeFrozen">Define if the type should be treated as a frozen type or not.</param>
 /// <returns>The Cassandra CQL query.</returns>
 ///
 /// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
-Task<ICassandraFluentMigrator> CreateUserDefinedTypeAsync<TEntity>([NotNull]this ICassandraFluentMigrator self);
+Task<ICassandraFluentMigrator> CreateUserDefinedTypeAsync<TEntity>([NotNull]this ICassandraFluentMigrator self, bool shouldBeFrozen = false);
 
 
 /// <summary>
@@ -320,12 +318,13 @@ Task<ICassandraFluentMigrator> DeleteUserDefinedTypeAsync<TEntity>([NotNull]this
 /// <param name="udt">The name of the User-Defined type.</param>
 /// <param name="column">The name of the column to be added.</param>
 /// <param name="type">The type of the new column.</param>
+/// <param name="shouldBeFrozen">Define if the type should be treated as a frozen type or not.</param>
 /// <returns>The Cassandra CQL query.</returns>
 ///
 /// <exception cref="NullReferenceException">Thrown when the arument are invalid or the specified type doesn't exists.</exception>
 /// <exception cref="ObjectNotFoundException">Thrown when the udt doesn't exists.</exception>
-Task<ICassandraFluentMigrator> AlterUdtAddColumnAsync([NotNull]this ICassandraFluentMigrator self, [NotNull]string udt, string column, Type type);
-Task<ICassandraFluentMigrator> AlterUdtAddColumnAsync<TEntity>([NotNull]this ICassandraFluentMigrator self, [NotNull]string udt, string column);
+Task<ICassandraFluentMigrator> AlterUdtAddColumnAsync([NotNull]this ICassandraFluentMigrator self, [NotNull]string udt, string column, Type type, bool shouldBeFrozen = false);
+Task<ICassandraFluentMigrator> AlterUdtAddColumnAsync<TEntity>([NotNull]this ICassandraFluentMigrator self, [NotNull]string udt, string column, bool shouldBeFrozen = false);
 
 /// <summary>
 /// Alter the specified User-Defined type by renaming the column name by the target name.
