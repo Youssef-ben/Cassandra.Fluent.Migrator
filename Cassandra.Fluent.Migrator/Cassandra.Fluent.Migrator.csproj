@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -14,10 +14,10 @@
     <RepositoryUrl>https://github.com/Youssef-ben/Cassandra.Fluent.Migrator</RepositoryUrl>
     <PackageIcon>cfm.png</PackageIcon>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageReleaseNotes>v1.0.0</PackageReleaseNotes>
-    <Version>1.0.0</Version>
+    <PackageReleaseNotes>v1.0.1 - Updated dependencies.</PackageReleaseNotes>
+    <Version>1.0.1</Version>
     <RepositoryType>Library</RepositoryType>
-    <PackageTags>CSharp, Cassandra, Migrations, .NetCore3,</PackageTags>
+    <PackageTags>CSharp, cassandra, migrations, .NetCore3, migrator, cassandra migrator, cassandra migrations, cassandra fluent, fluent code, fluent cassandra migration, fluent cassandra migrator</PackageTags>
 
     <CodeAnalysisRuleSet>..\StyleCopRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -27,10 +27,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CassandraCSharpDriver" Version="3.15.0" />
+    <PackageReference Include="CassandraCSharpDriver" Version="3.15.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.4" />
-    <PackageReference Include="Microsoft.Rest.ClientRuntime.Azure.Authentication" Version="2.4.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.7" />
+    <PackageReference Include="Microsoft.Rest.ClientRuntime.Azure.Authentication" Version="2.4.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
