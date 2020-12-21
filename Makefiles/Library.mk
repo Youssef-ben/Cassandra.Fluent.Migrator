@@ -14,10 +14,7 @@ test: ## Run the library tests.
 
 clean-build: ## Clean the project Build.
 	@echo "cleanning the project...."
-	@rm -rf ./Cassandra.Fluent.Migrator/bin/
-	@rm -rf ./Cassandra.Fluent.Migrator/obj/
-	@rm -rf ./Cassandra.Fluent.Migrator.Tests/bin/
-	@rm -rf ./Cassandra.Fluent.Migrator.Tests/obj/
+	@find . -not -path "./.git/*" -not -path "./.github/*" | grep -E '(bin|obj)' | xargs rm -rf
 
 app-help: ## Shows the current Makefile Commands.
 	@echo "" 
