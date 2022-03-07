@@ -15,10 +15,10 @@
         }
 
         [HttpGet]
-        [Route("registred")]
+        [Route("registered")]
         public IActionResult GetResistredMigrationAsync()
         {
-            return this.Ok(this.migrator.GetRegistredMigrations());
+            return this.Ok(this.migrator.GetRegisteredMigrations());
         }
 
         [HttpGet]
