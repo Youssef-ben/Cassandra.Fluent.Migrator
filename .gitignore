@@ -26,6 +26,7 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+[Nn]u[Gg]et.[Pp]ackages/
 
 # Visual Studio 2015 cache/options directory
 .vs/
@@ -475,5 +476,7 @@ MigrationBackup/
 # End of https://www.gitignore.io/api/csharp,aspnetcore
 
 # Projects Settings
+appsettings.*.jsonc
 appsettings.*.json
+!appsettings.tests.jsonc
 !appsettings.tests.json

@@ -29,7 +29,7 @@
             this.logger.LogDebug($"Creating the Address User-Defined type...");
             await this.cfm.CreateUserDefinedTypeAsync<Address>();
 
-            // Shold not be here, for the example purposes.
+            // Should not be here, for the example purposes.
             this.cfm
                 .GetCassandraSession()
                  .UserDefinedTypes.Define(

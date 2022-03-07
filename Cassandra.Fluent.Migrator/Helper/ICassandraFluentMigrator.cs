@@ -8,10 +8,10 @@
     public interface ICassandraFluentMigrator
     {
         /// <summary>
-        /// Gets the registred Cassandra session context.
+        /// Gets the registered Cassandra session context.
         /// </summary>
         ///
-        /// <returns>Current instance of the Cassadnra session.</returns>
+        /// <returns>Current instance of the Cassandra session.</returns>
         ISession GetCassandraSession();
 
         /// <summary>
@@ -44,7 +44,7 @@
         /// <returns>True, if exists. False, Otherwise.</returns>
         ///
         /// <exception cref="NullReferenceException">Thrown when one or all the specified arguments are invalid or null.</exception>
-        /// <exception cref="ObjectNotFoundException">Thrown when the table isn't available in the current casasndra session.</exception>
+        /// <exception cref="ObjectNotFoundException">Thrown when the table isn't available in the current Cassandra session.</exception>
         bool DoesColumnExists([NotNull]string table, [NotNull]string column);
 
         /// <summary>
@@ -68,7 +68,7 @@
         /// <returns>True, if exists. False otherwise.</returns>
         ///
         /// <exception cref="NullReferenceException">Thrown when one or all the specified arguments are invalid or null.</exception>
-        /// <exception cref="ObjectNotFoundException">Thrown when the User-Defined type isn't available in the current casasndra session.</exception>
+        /// <exception cref="ObjectNotFoundException">Thrown when the User-Defined type isn't available in the current Cassandra session.</exception>
         bool DoesUdtColumnExists([NotNull]string udt, [NotNull]string column);
 
         /// <summary>
@@ -92,7 +92,7 @@
         /// <returns>True, if exists. False otherwise.</returns>
         ///
         /// <exception cref="NullReferenceException">Thrown when one or all the specified arguments are invalid or null.</exception>
-        /// <exception cref="ObjectNotFoundException">Thrown when the Materialized view isn't available in the current casasndra session.</exception>
+        /// <exception cref="ObjectNotFoundException">Thrown when the Materialized view isn't available in the current Cassandra session.</exception>
         bool DoesMaterializedViewColumnExists([NotNull]string view, [NotNull] string column);
 
         /// <summary>

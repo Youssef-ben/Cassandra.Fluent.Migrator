@@ -56,7 +56,7 @@
 
         [Fact]
         [Priority(1)]
-        public void DoesTableExists_Sucess()
+        public void DoesTableExists_Success()
         {
             var result = this.cfmHelper.DoesTableExists(nameof(CfmHelperObject));
             Assert.True(result);
@@ -144,7 +144,7 @@
 
         [Fact]
         [Priority(3)]
-        public void DoesUdtExists_InvalidArguments_Faield()
+        public void DoesUdtExists_InvalidArguments_Failed()
         {
             try
             {

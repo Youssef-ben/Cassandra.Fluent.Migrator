@@ -44,9 +44,9 @@
             this.migrationHistory.CreateIfNotExists();
         }
 
-        public ICollection<IMigrator> GetRegistredMigrations()
+        public ICollection<IMigrator> GetRegisteredMigrations()
         {
-            this.logger.LogDebug("Fetching the registred migrations from the internal service provider...");
+            this.logger.LogDebug("Fetching the registered migrations from the internal service provider...");
             var migrations = this.serviceProvider.GetService<IEnumerable<IMigrator>>();
 
             if (migrations is null)
@@ -100,7 +100,7 @@
             this.logger.LogInformation("Starting the migration process.");
             var count = 0;
 
-            foreach (var migration in this.GetRegistredMigrations())
+            foreach (var migration in this.GetRegisteredMigrations())
             {
                 this.logger.LogDebug($"Checking if the migration [{migration.Name}] should be applied...");
                 if (!this.ShouldApplyMigration(migration))

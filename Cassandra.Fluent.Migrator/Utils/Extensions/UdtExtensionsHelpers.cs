@@ -61,7 +61,7 @@
         /// Build and execute the delete User-Defined type query statement.
         /// </summary>
         ///
-        /// <typeparam name="TEntity">The calss where the that represent the User-Defined type.</typeparam>
+        /// <typeparam name="TEntity">The class where the that represent the User-Defined type.</typeparam>
         /// <param name="self">The Cassandra Fluent Migrator.</param>
         /// <param name="name">The name of the User-Defined type (Optional: will be taken from the {TEntity} if not specified).</param>
         /// <returns>The Cassandra CQL query.</returns>

@@ -6,8 +6,8 @@ Cassandra Fluent Migrator is a library that offers a set of fluent code and exte
 
 ## Stack
 
-* [NetCore 3.1 LTS](https://dotnet.microsoft.com/download/dotnet-core/3.1)
-* [Cassandra CSharp driver - v3.15](https://docs.datastax.com/en/developer/csharp-driver/3.15/): A modern, feature-rich and highly tunable C# client library for Apache Cassandra using Cassandra’s binary protocol and Cassandra Query Language v3.
+* [.NET Standard 2.1](https://docs.microsoft.com/en-us/dotnet/standard/net-standard?WT.mc_id=dotnet-35129-website&tabs=net-standard-2-1)
+* [Cassandra CSharp driver - v3.17](https://docs.datastax.com/en/developer/csharp-driver/3.16/): A modern, feature-rich and highly tunable C# client library for Apache Cassandra using Cassandra’s binary protocol and Cassandra Query Language v3.
 
 ### Installation
 
@@ -24,7 +24,7 @@ PM> Install-Package Cassandra.Fluent.Migrator
 
 ### Documentations
 
-* [Wikipage:](https://github.com/Youssef-ben/Cassandra.Fluent.Migrator/wiki) Full documentation for the library.
+* [Wiki page:](https://github.com/Youssef-ben/Cassandra.Fluent.Migrator/wiki) Full documentation for the library.
 * [Cassandra Migrator:](https://github.com/Youssef-ben/Cassandra.Fluent.Migrator/wiki/Cassandra-Migrator) The core class of the library.
 * [Cassandra Fluent Migrator:](https://github.com/Youssef-ben/Cassandra.Fluent.Migrator/wiki/Cassandra-Fluent-Migrator) The migration helper class.
 * [Migrator interface:](https://github.com/Youssef-ben/Cassandra.Fluent.Migrator/wiki/Migrator-Interface) The base properties and method that the migrations should implement.
@@ -67,7 +67,7 @@ public class InitialMigration : IMigrator
                     .Map(a => a.Number, "Number".ToLower())
                     .Map(a => a.Street, "Street".ToLower())
                     .Map(a => a.City, "City".ToLower())
-                    .Map(a => a.Contry, "Contry".ToLower())
+                    .Map(a => a.Country, "Country".ToLower())
                     .Map(a => a.Province, "Province".ToLower())
                     .Map(a => a.PostalCode, "PostalCode".ToLower()));
 

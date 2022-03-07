@@ -90,7 +90,7 @@
         /// </summary>
         /// <param name="self">The Configuration Object.</param>
         /// <param name="section">The desired section that we want to convert into an object.</param>
-        /// <returns>New Cassandra setitngs instance.</returns>
+        /// <returns>New Cassandra settings instance.</returns>
         private static CassandraSettings GetConfigInstance(this IConfiguration self, string section)
         {
             var instance = new CassandraSettings();
@@ -105,10 +105,10 @@
         private static IConfiguration LoadConfiguration()
         {
             return new ConfigurationBuilder()
-            .AddJsonFile("Settings/appsettings.json", false)
-            .AddJsonFile("Settings/appsettings.tests.json", optional: true)
-            .AddJsonFile("Settings/appsettings.local.json", optional: true)
-            .AddJsonFile("Settings/appsettings.development.json", optional: true)
+            .AddJsonFile("Settings/appsettings.jsonc", false)
+            .AddJsonFile("Settings/appsettings.tests.jsonc", optional: true)
+            .AddJsonFile("Settings/appsettings.local.jsonc", optional: true)
+            .AddJsonFile("Settings/appsettings.development.jsonc", optional: true)
             .Build();
         }
     }

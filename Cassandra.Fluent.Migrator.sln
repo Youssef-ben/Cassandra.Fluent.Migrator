@@ -12,9 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StyleCop", "StyleCop", "{18
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{348F1051-F6FE-4F43-BEA9-14AC2FC65049}"
 	ProjectSection(SolutionItems) = preProject
-		Docs\cassandra-migrator-design.md = Docs\cassandra-migrator-design.md
-		Docs\cassandra-queries.md = Docs\cassandra-queries.md
-		Docs\example.md = Docs\example.md
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -38,9 +35,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "git", "git", "{9A9341AE-4A3
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cassandra.Fluent.Migrator.Tests", "Cassandra.Fluent.Migrator.Tests\Cassandra.Fluent.Migrator.Tests.csproj", "{FB4B578C-9B7F-4210-A942-C0A1D3C33923}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cassandra.Fluent.Migrator.Example", "Cassandra.Fluent.Migrator.Example\Cassandra.Fluent.Migrator.Example.csproj", "{3040C164-7DB3-4B6D-8D2F-63B19A9B2C85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cassandra.Fluent.Migrator.Example", "Cassandra.Fluent.Migrator.Example\Cassandra.Fluent.Migrator.Example.csproj", "{3040C164-7DB3-4B6D-8D2F-63B19A9B2C85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cassandra.Fluent.Migrator.Common", "Cassandra.Fluent.Migrator.Common\Cassandra.Fluent.Migrator.Common.csproj", "{49D2C936-59D3-4895-9AF0-884640E59245}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cassandra.Fluent.Migrator.Common", "Cassandra.Fluent.Migrator.Common\Cassandra.Fluent.Migrator.Common.csproj", "{49D2C936-59D3-4895-9AF0-884640E59245}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

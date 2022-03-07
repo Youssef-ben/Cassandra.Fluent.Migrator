@@ -10,7 +10,7 @@
         /// Start the migration process.
         ///
         /// <para>
-        ///     The method fetch the registred migrations from the {Services Provider} of the app and applies them.
+        ///     The method fetch the registered migrations from the {Services Provider} of the app and applies them.
         ///     Before running a migration, the method validate that it's not already applied, otherwise it skipps migration.
         ///     The migrator uses the {ApplyMigration()} method of the current migration.
         /// </para>
@@ -33,15 +33,15 @@
         MigrationHistory GetLatestMigration();
 
         /// <summary>
-        /// Gets the list of the registred migrations in the app {services provider}.
+        /// Gets the list of the registered migrations in the app {services provider}.
         /// The migrations are automatically sorted older to latest.
         /// </summary>
         ///
         /// <returns>List of migrations.</returns>
-        ICollection<IMigrator> GetRegistredMigrations();
+        ICollection<IMigrator> GetRegisteredMigrations();
 
         /// <summary>
-        /// Gets the list of the applied migrations from the databse.
+        /// Gets the list of the applied migrations from the database.
         /// The migrations are automatically sorted latest to older.
         /// </summary>
         ///
