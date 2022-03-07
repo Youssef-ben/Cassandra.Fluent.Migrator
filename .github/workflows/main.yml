@@ -42,7 +42,6 @@ jobs:
       with:
         dotnet-version: '3.1.x'
 
-    - run: docker ps
     - run: echo ${{ job.services.cassandra.id }}
 
     - name: Check
