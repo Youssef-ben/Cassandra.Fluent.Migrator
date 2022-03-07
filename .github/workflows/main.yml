@@ -41,11 +41,14 @@ jobs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.x'
-
-    - run: echo ${{ job.services.cassandra.id }}
-
-    - name: Check
-      run: cat ./Cassandra.Fluent.Migrator.Tests/Settings/appsettings.tests.json
+    - uses: fabasoad/setup-cassandra-action@v1.0.0
+      with:
+        host: '192.13.131.0'
+        port: 9042
+        username: Cassandra
+        password: Cassandra
+        connect-timeout: 30
+        keyspace: test
 
     - name: Run tests
       run: dotnet test
