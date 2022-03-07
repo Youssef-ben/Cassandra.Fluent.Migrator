@@ -26,10 +26,14 @@ jobs:
     runs-on: ubuntu-latest
 
    services:
-      cassandra:
-        image: cassandra
+      cfm-cassandra:
+        image: cassandra:latest
         ports:
           - 9042:9042
+        
+        env: 
+            CASSANDRA_CLUSTER_NAME: cfm-cluster
+
         options: --health-cmd "cqlsh --debug" --health-interval 5s --health-retries 10
     steps:
       - run: docker ps
