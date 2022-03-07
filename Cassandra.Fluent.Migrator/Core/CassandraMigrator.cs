@@ -46,7 +46,7 @@
 
         public ICollection<IMigrator> GetRegisteredMigrations()
         {
-            this.logger.LogDebug("Fetching the registred migrations from the internal service provider...");
+            this.logger.LogDebug("Fetching the registered migrations from the internal service provider...");
             var migrations = this.serviceProvider.GetService<IEnumerable<IMigrator>>();
 
             if (migrations is null)

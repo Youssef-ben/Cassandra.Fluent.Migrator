@@ -90,7 +90,7 @@
         /// </summary>
         /// <param name="self">The Configuration Object.</param>
         /// <param name="section">The desired section that we want to convert into an object.</param>
-        /// <returns>New Cassandra setitngs instance.</returns>
+        /// <returns>New Cassandra settings instance.</returns>
         private static CassandraSettings GetConfigInstance(this IConfiguration self, string section)
         {
             var instance = new CassandraSettings();

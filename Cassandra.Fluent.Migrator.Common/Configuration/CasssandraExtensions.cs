@@ -7,7 +7,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Rest.ClientRuntime.Azure.Authentication.Utilities;
 
-    public static class CasssandraExtensions
+    public static class CassandraExtensions
     {
         /// <summary>
         /// Validate the Cassandra Settings, Create a new connection to the database and add them to the Service Collection.
@@ -17,7 +17,7 @@
         /// <returns>Return a new Session instance.</returns>
         public static IServiceCollection AddCassandraSession([NotNull]this IServiceCollection self, [NotNull]IConfiguration configuration)
         {
-            Check.NotNull(self, $"The argument [Service Colection]");
+            Check.NotNull(self, $"The argument [Service Collection]");
             Check.NotNull(self, $"The argument [Configuration]");
 
             return self

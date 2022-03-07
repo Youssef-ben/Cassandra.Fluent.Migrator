@@ -12,7 +12,7 @@
     internal static class CSharpToCqlTypesExtensions
     {
         /// <summary>
-        /// Gets the equivalente CQL type of the supplied CSharp type.
+        /// Gets the equivalent CQL type of the supplied CSharp type.
         /// </summary>
         ///
         /// <param name="self">The CSharp Type.</param>
@@ -30,7 +30,7 @@
         }
 
         /// <summary>
-        /// Gets the equivalente CQL type from the Specified type column.
+        /// Gets the equivalent CQL type from the Specified type column.
         /// </summary>
         ///
         /// <param name="self">Cassandra Table/User-Defined type.</param>
@@ -48,7 +48,7 @@
         }
 
         /// <summary>
-        /// Gets the Column equivalente CQL type from the Specified type.
+        /// Gets the Column equivalent CQL type from the Specified type.
         /// </summary>
         ///
         /// <param name="type">Type Cassandra Table/User-Defined type from which we need to get the column type.</param>

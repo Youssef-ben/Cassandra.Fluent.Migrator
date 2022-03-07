@@ -26,7 +26,7 @@
         {
             await this.cfmHelper.CreateUserDefinedTypeAsync<NewCassandraType>();
 
-            // Shold not be here, for the example purposes.
+            // Should not be here, for the example purposes.
             this.cfmHelper
                 .GetCassandraSession()
                  .UserDefinedTypes.Define(

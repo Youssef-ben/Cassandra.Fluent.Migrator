@@ -7,7 +7,7 @@
 
     internal static class CommonHelpersExtensions
     {
-        private static CultureInfo DEFAULT_CUTURE => new CultureInfo("en-US", false);
+        private static CultureInfo DEFAULT_CULTURE => new CultureInfo("en-US", false);
 
         /// <summary>
         ///  Returns a new string whose textual value is the same as this string,
@@ -23,7 +23,7 @@
         {
             Check.NotNull(self, $"The argument [Column type code]");
 
-            return self.ToString().Normalize().ToLower(DEFAULT_CUTURE);
+            return self.ToString().Normalize().ToLower(DEFAULT_CULTURE);
         }
 
         /// <summary>
@@ -40,7 +40,7 @@
         {
             Check.NotEmptyNotNull(self, $"The method caller");
 
-            return self.Trim().Normalize().ToLower(DEFAULT_CUTURE);
+            return self.Trim().Normalize().ToLower(DEFAULT_CULTURE);
         }
 
         /// <summary>

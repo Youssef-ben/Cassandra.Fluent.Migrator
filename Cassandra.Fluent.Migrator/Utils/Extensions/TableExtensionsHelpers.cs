@@ -33,7 +33,7 @@
         }
 
         /// <summary>
-        /// Build and execute the Reanme column query statement.
+        /// Build and execute the Rename column query statement.
         /// </summary>
         ///
         /// <param name="self">The Cassandra Fluent Migrator.</param>
