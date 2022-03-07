@@ -30,6 +30,7 @@ jobs:
     
     services:
       cfm-cassandra:
+        container-name: cfm-database
         image: cassandra:latest
         env:
           CASSANDRA_CLUSTER_NAME: cfm-cluster
