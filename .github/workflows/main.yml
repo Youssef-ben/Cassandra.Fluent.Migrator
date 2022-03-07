@@ -44,3 +44,6 @@ jobs:
    
     - name: Run tests
       run: dotnet test
+
+    - name: Testing Gnu Make
+      run: make help
