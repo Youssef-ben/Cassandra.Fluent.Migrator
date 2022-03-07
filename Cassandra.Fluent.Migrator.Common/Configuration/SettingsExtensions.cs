@@ -105,10 +105,10 @@
         private static IConfiguration LoadConfiguration()
         {
             return new ConfigurationBuilder()
-            .AddJsonFile("Settings/appsettings.json", false)
-            .AddJsonFile("Settings/appsettings.tests.json", optional: true)
-            .AddJsonFile("Settings/appsettings.local.json", optional: true)
-            .AddJsonFile("Settings/appsettings.development.json", optional: true)
+            .AddJsonFile("Settings/appsettings.jsonc", false)
+            .AddJsonFile("Settings/appsettings.tests.jsonc", optional: true)
+            .AddJsonFile("Settings/appsettings.local.jsonc", optional: true)
+            .AddJsonFile("Settings/appsettings.development.jsonc", optional: true)
             .Build();
         }
     }
