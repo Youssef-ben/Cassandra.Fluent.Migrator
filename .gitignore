@@ -476,5 +476,5 @@ MigrationBackup/
 # End of https://www.gitignore.io/api/csharp,aspnetcore
 
 # Projects Settings
-appsettings.*.json
-!appsettings.tests.json
+appsettings.*.jsonc
+!appsettings.tests.jsonc
