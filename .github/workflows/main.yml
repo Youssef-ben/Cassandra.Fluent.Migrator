@@ -25,7 +25,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
 
-   services:
+    services:
       cfm-cassandra:
         image: cassandra:latest
         ports:
@@ -35,10 +35,7 @@ jobs:
           CASSANDRA_CLUSTER_NAME: cfm-cluster
 
         options: --health-cmd "cqlsh --debug" --health-interval 5s --health-retries 10
-    steps:
-      - run: docker ps
-      - run: docker exec ${{ job.services.cassandra.id }} cqlsh --debug localhost 9042 --execute="use somekeyspace;" 
-
+    
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-dotnet@v1
