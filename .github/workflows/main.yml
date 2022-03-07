@@ -6,23 +6,23 @@ on:
     branches: [master, dev]
 
 jobs:
-  # build:
-  #   runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - uses: actions/setup-dotnet@v1
-  #     with:
-  #       dotnet-version: '3.1.x'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "3.1.x"
 
-  #   - name: Restore packages
-  #     run: dotnet restore
+      - name: Restore packages
+        run: dotnet restore
 
-  #   - name: Build project
-  #     run: dotnet build
+      - name: Build project
+        run: dotnet build
 
   test:
-    #needs: build
+    needs: build
     runs-on: ubuntu-latest
 
     services:
@@ -41,9 +41,6 @@ jobs:
       - uses: actions/setup-dotnet@v1
         with:
           dotnet-version: "3.1.x"
-
-      - name: Testing Gnu Make
-        run: make bump-version PART=-get
 
       - name: Run tests
         run: dotnet test
