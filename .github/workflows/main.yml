@@ -58,6 +58,6 @@ jobs:
         dotnet-version: '3.1.22'
 
     - name: Pack
-        if: ${{ env.PUSH_PACKAGES }}
-        run: make bump-version
-        run: echo Step 2 running based on PUSH_PACKAGES value of $PUSH_PACKAGES
+      if: ${{ env.PUSH_PACKAGES }}
+      run: make bump-version
+      run: echo Step 2 running based on PUSH_PACKAGES value of $PUSH_PACKAGES
