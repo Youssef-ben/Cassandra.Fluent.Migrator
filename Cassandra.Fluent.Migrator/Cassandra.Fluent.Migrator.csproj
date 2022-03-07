@@ -1,51 +1,51 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-	  <TargetFramework>netcoreapp3.1</TargetFramework>
-	  <ApplicationIcon>favicon.ico</ApplicationIcon>
-	  <NeutralLanguage>en</NeutralLanguage>
-	  
-	  <Authors>Youssef Benhessou</Authors>
-    <id>Cassandra.Fluent.Migrator</id>
-    <Product>Cassandra Fluent Migrator</Product>
-    <Description>
-        Cassandra Fluent Migrator is a library that offers a set of fluent code and extensions to facilitate the creation and management of the migrations using code instead of CQL commands.
-    </Description>
-  
-	  <PackageIcon>cfm.png</PackageIcon>
-	  <PackageProjectUrl>https://github.com/Youssef-ben/Cassandra.Fluent.Migrator#readme</PackageProjectUrl>
-	  <RepositoryUrl>https://github.com/Youssef-ben/Cassandra.Fluent.Migrator</RepositoryUrl>
-	  <PackageTags>CSharp, cassandra, migrations, .NetCore3, migrator, cassandra migrator, cassandra migrations, cassandra fluent, fluent code, fluent cassandra migration, fluent cassandra migrator</PackageTags>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<ApplicationIcon>favicon.ico</ApplicationIcon>
+		<NeutralLanguage>en</NeutralLanguage>
 
-	  <Copyright>GPLv3</Copyright>
-	  <PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<Authors>Youssef Benhessou</Authors>
+		<id>Cassandra.Fluent.Migrator</id>
+		<Product>Cassandra Fluent Migrator</Product>
+		<Description>
+			Cassandra Fluent Migrator is a library that offers a set of fluent code and extensions to facilitate the creation and management of the migrations using code instead of CQL commands.
+		</Description>
 
-	  <Version>1.0.2</Version>
-	  <PackageReleaseNotes>SEE CHANGELOG FILE FOR MORE DETAILS.</PackageReleaseNotes>
-	  <RepositoryType>Library</RepositoryType>
+		<PackageIcon>cfm.png</PackageIcon>
+		<PackageProjectUrl>https://github.com/Youssef-ben/Cassandra.Fluent.Migrator#readme</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Youssef-ben/Cassandra.Fluent.Migrator</RepositoryUrl>
+		<PackageTags>CSharp, cassandra, migrations, .NetCore3, migrator, cassandra migrator, cassandra migrations, cassandra fluent, fluent code, fluent cassandra migration, fluent cassandra migrator</PackageTags>
 
-    <CodeAnalysisRuleSet>..\StyleCopRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
+		<Copyright>GPLv3</Copyright>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='$(Configuration)|AnyCPU'">
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-  </PropertyGroup>
+		<Version>1.0.2</Version>
+		<PackageReleaseNotes>SEE CHANGELOG FILE FOR MORE DETAILS.</PackageReleaseNotes>
+		<RepositoryType>Library</RepositoryType>
 
-  <ItemGroup>
-    <PackageReference Include="CassandraCSharpDriver" Version="3.16.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.10" />
-    <PackageReference Include="Microsoft.Rest.ClientRuntime.Azure.Authentication" Version="2.4.1" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
+		<CodeAnalysisRuleSet>..\StyleCopRules.ruleset</CodeAnalysisRuleSet>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Include="../LICENSE" Pack="true" PackagePath="\" />
-    <None Include="../README.md" Pack="true" PackagePath="\" />
-    <None Include="../cfm.png" Pack="true" PackagePath="\" />
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='$(Configuration)|AnyCPU'">
+		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CassandraCSharpDriver" Version="3.17.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Rest.ClientRuntime.Azure.Authentication" Version="2.4.1" />
+		<PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="../LICENSE" Pack="true" PackagePath="\" />
+		<None Include="../README.md" Pack="true" PackagePath="\" />
+		<None Include="../cfm.png" Pack="true" PackagePath="\" />
+	</ItemGroup>
 
 </Project>
