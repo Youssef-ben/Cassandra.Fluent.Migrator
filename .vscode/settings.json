@@ -1,5 +1,5 @@
 {
-    "cSpell.words": [
-        "cref"
-    ]
+  "editor.formatOnSave": true,
+
+  "cSpell.words": ["cref"]
 }
