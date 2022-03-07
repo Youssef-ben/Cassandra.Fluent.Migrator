@@ -42,25 +42,11 @@ jobs:
       with:
         dotnet-version: '3.1.x'
 
+    - run: docker ps
+    - run: echo ${{ job.services.cassandra.id }}
+
+    - name: Check
+      run: cat ./Cassandra.Fluent.Migrator.Tests/Settings/appsettings.tests.json
+
     - name: Run tests
       run: dotnet test
-
-  pack:
-    needs: test
-    runs-on: ubuntu-latest
-    env:
-      PUSH_PACKAGES: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.x'
-
-    - name: Test Details
-      if: ${{ env.PUSH_PACKAGES }}
-      run: echo Step 2 running based on PUSH_PACKAGES value of $PUSH_PACKAGES
-
-    - name: Pack
-      if: ${{ env.PUSH_PACKAGES }}
-      run: make bump-version

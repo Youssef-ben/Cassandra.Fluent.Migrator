@@ -35,9 +35,9 @@
 
         [Fact]
         [Priority(0)]
-        public void GetRegistredMigrations_Success()
+        public void GetRegisteredMigrations_Success()
         {
-            var result = this.migrator.GetRegistredMigrations();
+            var result = this.migrator.GetRegisteredMigrations();
 
             Assert.NotNull(result);
             Assert.NotEmpty(result);
