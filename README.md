@@ -24,7 +24,7 @@ PM> Install-Package Cassandra.Fluent.Migrator
 
 ### Documentations
 
-* [Wikipage:](https://github.com/Youssef-ben/Cassandra.Fluent.Migrator/wiki) Full documentation for the library.
+* [Wiki page:](https://github.com/Youssef-ben/Cassandra.Fluent.Migrator/wiki) Full documentation for the library.
 * [Cassandra Migrator:](https://github.com/Youssef-ben/Cassandra.Fluent.Migrator/wiki/Cassandra-Migrator) The core class of the library.
 * [Cassandra Fluent Migrator:](https://github.com/Youssef-ben/Cassandra.Fluent.Migrator/wiki/Cassandra-Fluent-Migrator) The migration helper class.
 * [Migrator interface:](https://github.com/Youssef-ben/Cassandra.Fluent.Migrator/wiki/Migrator-Interface) The base properties and method that the migrations should implement.
@@ -67,7 +67,7 @@ public class InitialMigration : IMigrator
                     .Map(a => a.Number, "Number".ToLower())
                     .Map(a => a.Street, "Street".ToLower())
                     .Map(a => a.City, "City".ToLower())
-                    .Map(a => a.Contry, "Contry".ToLower())
+                    .Map(a => a.Country, "Country".ToLower())
                     .Map(a => a.Province, "Province".ToLower())
                     .Map(a => a.PostalCode, "PostalCode".ToLower()));
 

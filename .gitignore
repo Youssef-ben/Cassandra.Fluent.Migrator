@@ -477,4 +477,6 @@ MigrationBackup/
 
 # Projects Settings
 appsettings.*.jsonc
+appsettings.*.json
 !appsettings.tests.jsonc
+!appsettings.tests.json

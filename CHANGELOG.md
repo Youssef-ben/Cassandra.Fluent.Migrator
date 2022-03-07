@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Started using a `CHANGLOG` log to document the changes mades to the project.
+- Started using a `CHANGELOG` log to document the changes made to the project.
 - Started using `Semantic Versioning` system.
 - Updated to the latest version the `DataStax` library `CassandraCSharpDriver`.
 - Updated the Microsoft libraries for all the projects.

@@ -12,7 +12,7 @@
     {
         /// <summary>
         /// Adds the required services to the application service provider. <br/>
-        /// Note: All the library classes are registred as Singleton.
+        /// Note: All the library classes are registered as Singleton.
         /// </summary>
         ///
         /// <param name="self">The service provider collection.</param>
@@ -25,13 +25,13 @@
         }
 
         /// <summary>
-        /// Start the migration processs.
+        /// Start the migration process.
         /// </summary>
         ///
         /// <param name="self">Application Builder.</param>
         /// <returns>The Application Builder.</returns>
         ///
-        /// <exception cref="ObjectNotFoundException">Thrown when the Migrator is not registred in the Application Service provider.</exception>
+        /// <exception cref="ObjectNotFoundException">Thrown when the Migrator is not registered in the Application Service provider.</exception>
         public static IApplicationBuilder UseCassandraMigration([NotNull]this IApplicationBuilder self)
         {
             Check.NotNull(self, $"The argument [Application Builder]");
@@ -40,7 +40,7 @@
 
             if (migrator is null)
             {
-                throw new ObjectNotFoundException($"Counldn't find a registred Migrator. Please the [<IServiceCollection>.AddCassandraFluentMigratorServices()]");
+                throw new ObjectNotFoundException($"Couldn't find a registered Migrator. Please the [<IServiceCollection>.AddCassandraFluentMigratorServices()]");
             }
 
             migrator.Migrate();

@@ -21,7 +21,7 @@
         /// <para>Note: If the User-Defined type name is [Null || Empty] the method will take the generic type {TEntity} name.</para>
         /// </summary>
         ///
-        /// <typeparam name="TEntity">The calss where the method should look for the properties and their types.</typeparam>
+        /// <typeparam name="TEntity">The class where the method should look for the properties and their types.</typeparam>
         /// <param name="self">The Cassandra Fluent Migrator.</param>
         /// <param name="name">The name of the User-Defined type (Optional).</param>
         /// <param name="shouldBeFrozen">Define if the type should be treated as a frozen type or not.</param>
@@ -50,7 +50,7 @@
         /// <para>Note: If the User-Defined type name is [Null || Empty] the method will take the generic type {TEntity} name.</para>
         /// </summary>
         ///
-        /// <typeparam name="TEntity">The calss where the method should look for the properties and their types.</typeparam>
+        /// <typeparam name="TEntity">The class where the method should look for the properties and their types.</typeparam>
         /// <param name="self">The Cassandra Fluent Migrator.</param>
         /// <param name="name">The name of the udt (Optional).</param>
         /// <returns>The Cassandra Fluent Migrator helper.</returns>
@@ -108,7 +108,7 @@
         /// If the column exists, the method skips the action.
         /// </summary>
         ///
-        /// <typeparam name="TEntity">The calss where the method should search for the properties and their types.</typeparam>
+        /// <typeparam name="TEntity">The class where the method should search for the properties and their types.</typeparam>
         /// <param name="self">The Cassandra Fluent Migrator.</param>
         /// <param name="udt">The name of the User-Defined type.</param>
         /// <param name="column">The name of the column to be added.</param>
