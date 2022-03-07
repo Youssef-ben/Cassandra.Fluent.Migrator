@@ -3,12 +3,12 @@ name: Cassandra Fluent library
 on:
   push:
   pull_request:
-    branches: [ master, dev ]
+    branches: [master, dev]
 
 jobs:
   # build:
   #   runs-on: ubuntu-latest
-        
+
   #   steps:
   #   - uses: actions/checkout@v2
   #   - uses: actions/setup-dotnet@v1
@@ -17,7 +17,7 @@ jobs:
 
   #   - name: Restore packages
   #     run: dotnet restore
-    
+
   #   - name: Build project
   #     run: dotnet build
 
@@ -30,17 +30,20 @@ jobs:
         image: cassandra:latest
         ports:
           - 9042:9042
-        
-        env: 
+
+        env:
           CASSANDRA_CLUSTER_NAME: cfm-cluster
 
         options: --health-cmd "cqlsh --debug" --health-interval 10s --health-retries 10
-    
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.x'
 
-    - name: Run tests
-      run: dotnet test
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "3.1.x"
+
+      - name: Testing Gnu Make
+        run: make
+
+      - name: Run tests
+        run: dotnet test
