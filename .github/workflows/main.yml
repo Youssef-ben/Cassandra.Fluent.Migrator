@@ -34,7 +34,7 @@ jobs:
         env: 
           CASSANDRA_CLUSTER_NAME: cfm-cluster
 
-        options: --health-cmd "cqlsh --debug" --health-interval 5s --health-retries 10
+        options: --health-cmd "cqlsh --debug" --health-interval 10s --health-retries 10
     
     steps:
     - uses: actions/checkout@v2
