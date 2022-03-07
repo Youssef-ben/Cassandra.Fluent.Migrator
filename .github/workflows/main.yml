@@ -13,7 +13,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '3.1.100'
+        dotnet-version: '3.1.22'
 
     - name: Run resotre
       run: dotnet restore
@@ -40,7 +40,24 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '3.1.100'
+        dotnet-version: '3.1.22'
 
     - name: Run tests
       run: dotnet test
+
+  pack:
+    needs: test
+    runs-on: ubuntu-latest
+    env:
+      PUSH_PACKAGES: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.22'
+
+    - name: Pack
+        if: ${{ env.PUSH_PACKAGES }}
+        run: make bump-version
+        run: echo Step 2 running based on PUSH_PACKAGES value of $PUSH_PACKAGES
