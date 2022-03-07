@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v1.0.3] - [Date: 2022-03-06]
 
+### WIP
+
+- Changed the target framework from `.netCore3.1` to `netStandard2.1`.
+- Fixed a typo `Registred` to `Registered`.
+
 ### Added
 
 - Added a new Script `bump-version.sh` to automatically upgrade the version.
@@ -15,11 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Updated to the latest version the `DataStax` library `CassandraCSharpDriver v3.17`.
-
-### WIP
-
-- Changed the target framework from `.netCore3.1` to `netStandard2.1`.
-- Fixed a typo `Registred` to `Registered`.
+- Fixed some typos errors.
 
 ## [v1.0.2] - [Date: 2020-12-20]
 
