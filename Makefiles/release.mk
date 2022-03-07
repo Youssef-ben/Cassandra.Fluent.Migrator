@@ -42,5 +42,5 @@ endif
 release-help: ## Shows the current Makefile Commands.
 	@echo "" 
 	@echo "==================================== RELEASE ===================================="
-	@grep -E '^[a-zA-Z_-]+:.*$$' ./Makefiles/release.mk | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+:.*$$' ./Makefiles/Release.mk | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 	@echo "============================================================================="
