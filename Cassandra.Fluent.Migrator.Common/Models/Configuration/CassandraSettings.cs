@@ -1,21 +1,75 @@
-﻿namespace Cassandra.Fluent.Migrator.Common.Models.Configuration
+﻿namespace Cassandra.Fluent.Migrator.Common.Models.Configuration;
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+
+[ExcludeFromCodeCoverage]
+public class CassandraSettings
 {
-    using System.Collections.Generic;
+    public ICollection<string> ContactPoints { get; set; }
 
-    public class CassandraSettings
+    public CassandraCredentials Credentials { get; set; }
+
+    public int Port { get; set; }
+
+    public string DefaultKeyspace { get; set; }
+
+    public Dictionary<string, string> Replication { get; set; }
+
+    public CassandraQueryOptions Query { get; set; }
+
+    public bool DurableWrites { get; set; } = true;
+
+    public CassandraSettings ValidateSetting()
     {
-        public List<string> ContactPoints { get; set; }
+        const string ARGUMENT_NULL_EXCEPTION_MESSAGE = "The configuration [{0}] section is invalid";
 
-        public CassandraCredentials Credentials { get; set; }
+        if (ContactPoints is null || ContactPoints.Count == 0)
+        {
+            throw new ArgumentNullException(string.Format(ARGUMENT_NULL_EXCEPTION_MESSAGE, "Contact Point"));
+        }
 
-        public int Port { get; set; }
+        if (Port == 0)
+        {
+            throw new ArgumentNullException(string.Format(ARGUMENT_NULL_EXCEPTION_MESSAGE, "Port"));
+        }
 
-        public string DefaultKeyspace { get; set; }
+        if (Credentials is null || string.IsNullOrWhiteSpace(Credentials.Username) ||
+            string.IsNullOrWhiteSpace(Credentials.Password))
+        {
+            throw new ArgumentNullException(string.Format(ARGUMENT_NULL_EXCEPTION_MESSAGE, "Credentials"));
+        }
 
-        public Dictionary<string, string> Replication { get; set; }
+        if (string.IsNullOrWhiteSpace(DefaultKeyspace))
+        {
+            throw new ArgumentNullException(string.Format(ARGUMENT_NULL_EXCEPTION_MESSAGE, "Default Keyspace"));
+        }
 
-        public CassandraQueryOptions Query { get; set; }
+        if (Replication is null || string.IsNullOrWhiteSpace(Replication["class"]))
+        {
+            throw new ArgumentNullException(string.Format(ARGUMENT_NULL_EXCEPTION_MESSAGE, "Replication"));
+        }
 
-        public bool DurableWrites { get; set; } = true;
+        if (Replication["class"].ToLower() == "NetworkTopologyStrategy".ToLower() &&
+            string.IsNullOrWhiteSpace(Replication["datacenter"]))
+        {
+            throw new ArgumentNullException(string
+                    .Format(ARGUMENT_NULL_EXCEPTION_MESSAGE, "Replication: datacenter"));
+        }
+
+        if (Replication["class"].ToLower() == "SimpleStrategy".ToLower() &&
+            string.IsNullOrWhiteSpace(Replication["replication_factor"]))
+        {
+            throw new ArgumentNullException(string
+                    .Format(ARGUMENT_NULL_EXCEPTION_MESSAGE, "Replication: replication_factor"));
+        }
+
+        if (Query is null || Query.HeartBeat == 0)
+        {
+            throw new ArgumentNullException(string.Format(ARGUMENT_NULL_EXCEPTION_MESSAGE, "Query"));
+        }
+
+        return this;
     }
 }
