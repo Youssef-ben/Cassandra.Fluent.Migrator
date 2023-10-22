@@ -3,133 +3,135 @@
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using Cassandra;
-    using Cassandra.Data.Linq;
-    using Cassandra.Fluent.Migrator.Utils.Constants;
-    using Cassandra.Fluent.Migrator.Utils.Exceptions;
-    using Cassandra.Fluent.Migrator.Utils.Extensions;
+    using Data.Linq;
     using Microsoft.Rest.ClientRuntime.Azure.Authentication.Utilities;
+    using Utils.Constants;
+    using Utils.Exceptions;
+    using Utils.Extensions;
 
     public class CassandraFluentMigrator : ICassandraFluentMigrator
     {
-        private readonly ISession cassandraSession;
         private readonly string cassandraKeyspace;
+        private readonly ISession cassandraSession;
 
-        public CassandraFluentMigrator(ISession cassandraSession)
+        public CassandraFluentMigrator(ISession session)
         {
-            this.cassandraSession = cassandraSession;
-            this.cassandraKeyspace = this.cassandraSession.Keyspace;
+            cassandraSession = session;
+            cassandraKeyspace = cassandraSession.Keyspace;
         }
 
         public ISession GetCassandraSession()
         {
-            return this.cassandraSession;
+            return cassandraSession;
         }
 
         public Table<TEntity> GetTable<TEntity>()
-            where TEntity : class
+                where TEntity : class
         {
-            return new Table<TEntity>(this.cassandraSession);
+            return new Table<TEntity>(cassandraSession);
         }
 
-        public bool DoesTableExists([NotNull]string table)
+        public bool DoesTableExists([NotNull] string table)
         {
             Check.NotEmptyNotNull(table, $"The argument [{nameof(table)}]");
 
-            return this.cassandraSession
-                .Cluster
-                .Metadata
-                .GetTables(this.cassandraKeyspace)
-                .Any(x => x.NormalizeString() == table.NormalizeString());
+            return cassandraSession
+                    .Cluster
+                    .Metadata
+                    .GetTables(cassandraKeyspace)
+                    .Any(x => x.NormalizeString() == table.NormalizeString());
         }
 
-        public bool DoesColumnExists([NotNull]string table, [NotNull]string column)
+        public bool DoesColumnExists([NotNull] string table, [NotNull] string column)
         {
             Check.NotEmptyNotNull(column, $"The argument [{nameof(column)}]");
 
-            if (!this.DoesTableExists(table))
+            if (DoesTableExists(table))
             {
-                var errorMsg = AppErrorsMessages.OBJECT_NOT_FOUND.NormalizeString("table", table, this.cassandraKeyspace);
-                throw new ObjectNotFoundException(errorMsg);
+                return cassandraSession
+                        .Cluster
+                        .Metadata
+                        .GetTable(cassandraKeyspace, table.NormalizeString())
+                        .TableColumns
+                        .AsEnumerable()
+                        .Any(x => x.Name.NormalizeString() == column.NormalizeString());
             }
 
-            return this.cassandraSession
-                .Cluster
-                .Metadata
-                .GetTable(this.cassandraKeyspace, table.NormalizeString())
-                .TableColumns
-                .Any(x => x.Name.NormalizeString() == column.NormalizeString());
+            var errorMsg = AppErrorsMessages.OBJECT_NOT_FOUND.NormalizeString("table", table, cassandraKeyspace);
+            throw new ObjectNotFoundException(errorMsg);
         }
 
-        public bool DoesUdtExists([NotNull]string udt)
+        public bool DoesUdtExists([NotNull] string udt)
         {
             Check.NotEmptyNotNull(udt, $"The argument [{nameof(udt)}]");
 
-            var result = this.cassandraSession
-                .Cluster
-                .Metadata
-                .GetUdtDefinition(this.cassandraKeyspace, udt.NormalizeString());
+            UdtColumnInfo result = cassandraSession
+                    .Cluster
+                    .Metadata
+                    .GetUdtDefinition(cassandraKeyspace, udt.NormalizeString());
 
             return result != null;
         }
 
-        public bool DoesUdtColumnExists([NotNull]string udt, [NotNull]string column)
+        public bool DoesUdtColumnExists([NotNull] string udt, [NotNull] string column)
         {
             Check.NotEmptyNotNull(column, $"The argument [{nameof(column)}]");
 
-            if (!this.DoesUdtExists(udt))
+            if (DoesUdtExists(udt))
             {
-                var errorMsg = AppErrorsMessages.OBJECT_NOT_FOUND.NormalizeString("User-Defined type", udt, this.cassandraKeyspace);
-                throw new ObjectNotFoundException(errorMsg);
+                return cassandraSession
+                        .Cluster
+                        .Metadata
+                        .GetUdtDefinition(cassandraKeyspace, udt.NormalizeString())
+                        .Fields
+                        .Exists(x => x.Name.NormalizeString() == column.NormalizeString());
             }
 
-            return this.cassandraSession
-                .Cluster
-                .Metadata
-                .GetUdtDefinition(this.cassandraKeyspace, udt.NormalizeString())
-                .Fields
-                .Any(x => x.Name.NormalizeString() == column.NormalizeString());
+            var errorMsg = AppErrorsMessages.OBJECT_NOT_FOUND
+                    .NormalizeString("User-Defined type", udt, cassandraKeyspace);
+            throw new ObjectNotFoundException(errorMsg);
         }
 
-        public bool DoesMaterializedViewExists([NotNull]string view)
+        public bool DoesMaterializedViewExists([NotNull] string view)
         {
             Check.NotEmptyNotNull(view, $"The argument [{nameof(view)}]");
 
-            var result = this.cassandraSession
-                .Cluster
-                .Metadata
-                .GetMaterializedView(this.cassandraKeyspace, view);
+            MaterializedViewMetadata result = cassandraSession
+                    .Cluster
+                    .Metadata
+                    .GetMaterializedView(cassandraKeyspace, view);
 
             return result != null;
         }
 
-        public bool DoesMaterializedViewColumnExists([NotNull]string view, [NotNull] string column)
+        public bool DoesMaterializedViewColumnExists([NotNull] string view, [NotNull] string column)
         {
             Check.NotEmptyNotNull(column, $"The argument [{nameof(column)}]");
 
-            if (!this.DoesMaterializedViewExists(view))
+            if (DoesMaterializedViewExists(view))
             {
-                var errorMsg = AppErrorsMessages.OBJECT_NOT_FOUND.NormalizeString("Materialized view", view, this.cassandraKeyspace);
-                throw new ObjectNotFoundException(errorMsg);
+                return cassandraSession
+                        .Cluster
+                        .Metadata
+                        .GetMaterializedView(cassandraKeyspace, view)
+                        .ColumnsByName
+                        .Any(x => x.Key.NormalizeString() == column.NormalizeString());
             }
 
-            return this.cassandraSession
-                .Cluster
-                .Metadata
-                .GetMaterializedView(this.cassandraKeyspace, view)
-                .ColumnsByName
-                .Any(x => x.Key.NormalizeString() == column.NormalizeString());
+            var errorMsg = AppErrorsMessages.OBJECT_NOT_FOUND
+                    .NormalizeString("Materialized view", view, cassandraKeyspace);
+            throw new ObjectNotFoundException(errorMsg);
         }
 
-        public string GetCqlType([NotNull]Type type, bool shouldBeFrozen = false)
+        public string GetCqlType([NotNull] Type type, bool shouldBeFrozen = false)
         {
             Check.NotNull(type, $"The argument [{nameof(type)}]");
 
             return type.GetCqlType(shouldBeFrozen);
         }
 
-        public string GetColumnType<TEntity>([NotNull]string column, bool shouldBeFrozen = false)
-            where TEntity : class
+        public string GetColumnType<TEntity>([NotNull] string column, bool shouldBeFrozen = false)
+                where TEntity : class
         {
             Check.NotEmptyNotNull(column, $"The argument [{nameof(column)}]");
 

@@ -3,123 +3,131 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Cassandra.Data.Linq;
-    using Cassandra.Fluent.Migrator.Core.Models;
+    using Data.Linq;
+    using Extensions;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Models;
+    using Utils.Exceptions;
 
     public class CassandraMigrator : ICassandraMigrator
     {
-        private readonly IServiceProvider serviceProvider;
         private readonly ILogger<CassandraMigrator> logger;
-        private readonly ISession cassandraSession;
-
         private readonly Table<MigrationHistory> migrationHistory;
-
-        private readonly string keyspace;
-        private bool showLog = true;
+        private readonly IServiceProvider serviceProvider;
 
         public CassandraMigrator(IServiceProvider serviceProvider, ILogger<CassandraMigrator> logger)
         {
             this.serviceProvider = serviceProvider;
             this.logger = logger;
 
-            this.cassandraSession = this.serviceProvider.GetService<ISession>();
-            if (this.cassandraSession is null)
+            this.logger.LogInformation("Started the initializing process of the Cassandra Migrator!");
+
+            var cassandraSession = this.serviceProvider.GetService<ISession>();
+            if (cassandraSession is null)
             {
-                throw new NullReferenceException($"The Cassandra session was not found in the service provider!");
+                var message = "The Cassandra session was not found in the service provider!";
+                message += "Please try registering the cassandra session before!";
+                throw new ObjectNotFoundException(message);
             }
 
-            this.keyspace = this.cassandraSession.Keyspace;
-
-            this.logger.LogInformation("Initializing the Cassandra Migrator.");
-
             // Ensure that Keyspace exists.
-            this.logger.LogDebug("Making sure that the default keyspace exists...");
-            this.cassandraSession.CreateKeyspaceIfNotExists(this.keyspace);
+            this.logger.LogDebug("Making sure that the keyspace exists...");
+            cassandraSession.CreateKeyspaceIfNotExists(cassandraSession.Keyspace);
 
             // Ensure that the Migration table exists.
-            this.logger.LogDebug("Making sure that the migration history table exists in the keyspace...");
-            this.migrationHistory = new Table<MigrationHistory>(this.cassandraSession);
-            this.migrationHistory.CreateIfNotExists();
+            this.logger.LogDebug("Making sure that the migration history table exists in the keyspace!");
+            migrationHistory = new Table<MigrationHistory>(cassandraSession);
+            migrationHistory.CreateIfNotExists();
+
+            this.logger.LogInformation("The Cassandra Migrator initializing process finished!");
         }
 
         public ICollection<IMigrator> GetRegisteredMigrations()
         {
-            this.logger.LogDebug("Fetching the registered migrations from the internal service provider...");
-            var migrations = this.serviceProvider.GetService<IEnumerable<IMigrator>>();
+            logger.LogInformation("Fetching the registered migrations from the service provider!");
+            List<IMigrator> migrations = serviceProvider
+                    .GetService<IEnumerable<IMigrator>>()
+                    .ToList();
 
-            if (migrations is null)
-            {
-                this.logger.LogWarning("Couldn't find any migration to apply!");
-                migrations = new List<IMigrator>();
-            }
+            logger.LogInformation("Found ({Count}) registered migration(s) in the service provider!",
+                    migrations.Count);
 
+            logger.LogDebug("Ordering the registered migrations by version!");
             return migrations
-                .OrderBy(x => x.Version)
-                .ToList();
+                    .OrderBy(x => x.Version)
+                    .ToList();
         }
 
         public ICollection<MigrationHistory> GetAppliedMigrations()
         {
-            if (this.showLog)
+            logger.LogInformation("Fetching the applied migrations from the the database!");
+            ICollection<MigrationHistory> result = migrationHistory
+                    .Execute()
+                    .ToList();
+
+            logger.LogInformation("Found ({Count}) applied migration(s)!", result.Count);
+            if (result.Count == 0)
             {
-                this.logger.LogDebug("Fetching the applied migrations from the database...");
+                return result;
             }
 
-            var result = this
-                .migrationHistory
-                .Execute()
-                .ToList();
-
-            if (!result.Any())
-            {
-                return new List<MigrationHistory>();
-            }
-
+            logger.LogDebug("Ordering the applied migrations by version!");
             return result
-                .OrderByDescending(x => x.Version)
-                .ToList();
+                    .OrderByDescending(x => x.Version)
+                    .ToList();
         }
 
         public MigrationHistory GetLatestMigration()
         {
-            this.logger.LogDebug("Fetching the last applied migration from the database...");
+            ICollection<MigrationHistory> appliedMigrations = GetAppliedMigrations();
 
-            this.showLog = false;
+            logger.LogInformation("Fetching the last applied migration from the database!");
+            MigrationHistory latestMigration = appliedMigrations.FirstOrDefault();
+            if (latestMigration is null)
+            {
+                logger.LogWarning("Couldn't find any applied migration!");
+                return default;
+            }
 
-            var migrations = this.GetAppliedMigrations();
-
-            this.showLog = true;
-
-            return migrations.FirstOrDefault();
+            logger.LogInformation("The last applied migration is ([{Version}] - [{Name}])!",
+                    latestMigration.Version,
+                    latestMigration.Name);
+            return latestMigration;
         }
 
         public int Migrate()
         {
-            this.logger.LogInformation("Starting the migration process.");
-            var count = 0;
+            logger.LogInformation("Starting the migration process!");
+            ICollection<IMigrator> registeredMigrations = GetRegisteredMigrations();
+            MigrationHistory latestAppliedMigration = GetLatestMigration();
+            Version latestVersion = latestAppliedMigration is null
+                                            ? default
+                                            : new Version(latestAppliedMigration.Version);
 
-            foreach (var migration in this.GetRegisteredMigrations())
+            var appliedMigrationsCount = 0;
+            foreach (IMigrator migration in registeredMigrations)
             {
-                this.logger.LogDebug($"Checking if the migration [{migration.Name}] should be applied...");
-                if (!this.ShouldApplyMigration(migration))
+                logger.LogDebug("Checking if the migration [{Name}] should be applied!", migration.Name);
+                if (latestVersion != null && migration.Version <= latestVersion)
                 {
-                    this.logger.LogWarning($"SKIPPING the migration [{migration.Name}], already applied, ...");
+                    logger.LogWarning("[SKIPPING] - The migration [{Name}] is already applied!", migration.Name);
                     continue;
                 }
 
-                this.logger.LogDebug($"Executing the migration [{migration.Name}]...");
+                logger.LogInformation("Applying the migration [{Name}]!", migration.Name);
                 migration.ApplyMigrationAsync().GetAwaiter().GetResult();
 
-                this.logger.LogDebug("Updating the migration history....");
-                this.UpdateMigrationHistory(this.migrationHistory, migration);
+                logger.LogDebug("Migration applied! Updating the migration history");
+                this.UpdateMigrationHistory(migrationHistory, migration);
 
-                count++;
+                appliedMigrationsCount++;
             }
 
-            this.logger.LogInformation($"The Migration process is done. Migration(s) applied [{count}].");
-            return count;
+            logger.LogInformation(
+                    "The Migration process is done with ({Count}) Migration(s) applied !",
+                    appliedMigrationsCount);
+            return appliedMigrationsCount;
         }
     }
 }

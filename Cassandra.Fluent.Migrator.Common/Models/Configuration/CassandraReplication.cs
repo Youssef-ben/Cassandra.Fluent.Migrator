@@ -1,9 +1,11 @@
-﻿namespace Cassandra.Fluent.Migrator.Common.Models.Configuration
-{
-    public class CassandraReplication
-    {
-        public string Class { get; set; }
+﻿namespace Cassandra.Fluent.Migrator.Common.Models.Configuration;
 
-        public string Datacenter { get; set; }
-    }
+using System.Diagnostics.CodeAnalysis;
+
+[ExcludeFromCodeCoverage]
+public class CassandraReplication
+{
+    public string Class { get; set; }
+
+    public string Datacenter { get; set; }
 }

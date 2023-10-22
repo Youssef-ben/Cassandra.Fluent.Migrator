@@ -12,25 +12,27 @@
             CreateHostBuilder(args).Build().Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-            .ConfigureAppConfiguration((hostingContext, config) =>
-            {
-                config
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: true);
-            })
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-            })
-            .UseSerilog((hostingContext, loggerConfiguration) =>
-            {
-                loggerConfiguration
-                    .ReadFrom
-                    .Configuration(hostingContext.Configuration)
-                    .Enrich
-                    .FromLogContext();
-            });
+        private static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            return Host.CreateDefaultBuilder(args)
+                    .ConfigureAppConfiguration((hostingContext, config) =>
+                    {
+                        config
+                                .AddJsonFile("appsettings.json", false, true)
+                                .AddJsonFile("appsettings.local.json", true, true);
+                    })
+                    .ConfigureWebHostDefaults(webBuilder =>
+                    {
+                        webBuilder.UseStartup<Startup>();
+                    })
+                    .UseSerilog((hostingContext, loggerConfiguration) =>
+                    {
+                        loggerConfiguration
+                                .ReadFrom
+                                .Configuration(hostingContext.Configuration)
+                                .Enrich
+                                .FromLogContext();
+                    });
+        }
     }
 }
