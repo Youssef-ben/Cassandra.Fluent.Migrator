@@ -50,6 +50,9 @@ jobs:
     # needs: [build]
     # if: github.ref == 'refs/heads/master'
     steps:
+      - name: Version
+        run: ls -al
+
       - name: Bump Version
         run: ./version-bump.sh patch Cassandra.Fluent.Migrator/Cassandra.Fluent.Migrator.csproj
 
