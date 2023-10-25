@@ -60,3 +60,11 @@ jobs:
 
       - name: Push to Git
         run: cat Cassandra.Fluent.Migrator/Cassandra.Fluent.Migrator.csproj
+
+      - name: Update changes in GitHub repository
+        run: |
+          git config --global user.name 'GitHub Action' 
+          git config --global user.email 'github-action@github.com'
+          git add -A
+          git commit -m '[skip ci] add configs generated using jsonnet & GitHub workflow'
+          git push
