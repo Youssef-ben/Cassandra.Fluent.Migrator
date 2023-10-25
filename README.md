@@ -7,7 +7,7 @@ Cassandra Fluent Migrator is a library that offers a set of fluent code and exte
 ## Stack
 
 * [.NET Standard 2.1](https://docs.microsoft.com/en-us/dotnet/standard/net-standard?WT.mc_id=dotnet-35129-website&tabs=net-standard-2-1)
-* [Cassandra CSharp driver - v3.17](https://docs.datastax.com/en/developer/csharp-driver/3.16/): A modern, feature-rich and highly tunable C# client library for Apache Cassandra using Cassandra’s binary protocol and Cassandra Query Language v3.
+* [Cassandra CSharp driver - v3.x.x](https://docs.datastax.com/en/developer/csharp-driver/3.16/): A modern, feature-rich and highly tunable C# client library for Apache Cassandra using Cassandra’s binary protocol and Cassandra Query Language v3.
 
 ### Installation
 

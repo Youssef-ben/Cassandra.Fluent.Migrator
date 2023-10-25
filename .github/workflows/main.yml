@@ -8,37 +8,50 @@ on:
     branches: [master]
 
 jobs:
-  build:
+  # build:
+  #   runs-on: ubuntu-latest
+
+  #   strategy:
+  #     matrix:
+  #       dotnet:
+  #         ["3.1.x"]
+  #         ## ["3.1.x", "5.0.x", "7.0.x"]
+
+  #   services:
+  #     cfm-cassandra:
+  #       image: cassandra:latest
+  #       ports:
+  #         - 9042:9042
+
+  #       env:
+  #         CASSANDRA_CLUSTER_NAME: cfm-cluster
+
+  #       options: --health-cmd "cqlsh --debug" --health-interval 10s --health-retries 10
+
+  #   steps:
+  #     - uses: actions/checkout@v3
+
+  #     - name: Setup dotnet
+  #       uses: actions/setup-dotnet@v3
+  #       with:
+  #         dotnet-version: ${{ matrix.dotnet }}
+
+  #     - name: Restoring packages
+  #       run: dotnet restore
+
+  #     - name: Testing
+  #       run: dotnet build --configuration Release --no-restore
+
+  #     - name: Test
+  #       run: dotnet test --no-restore --collect:"XPlat Code Coverage" --results-directory ./TestResults/.coverage
+
+  bump-version:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        dotnet: ["3.1.x", "5.0.x", "7.0.x"]
-
-    services:
-      cfm-cassandra:
-        image: cassandra:latest
-        ports:
-          - 9042:9042
-
-        env:
-          CASSANDRA_CLUSTER_NAME: cfm-cluster
-
-        options: --health-cmd "cqlsh --debug" --health-interval 10s --health-retries 10
-
+    # needs: [build]
+    # if: github.ref == 'refs/heads/master'
     steps:
-      - uses: actions/checkout@v3
+      - name: Bump Version
+        run: ./version-bump.sh patch Cassandra.Fluent.Migrator/Cassandra.Fluent.Migrator.csproj
 
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: ${{ matrix.dotnet }}
-
-      - name: Restoring packages
-        run: dotnet restore
-
-      - name: Testing
-        run: dotnet build --configuration Release --no-restore
-
-      - name: Test
-        run: dotnet test --no-restore --collect:"XPlat Code Coverage" --results-directory ./TestResults/.coverage
+      - name: Push to Git
+        run: cat Cassandra.Fluent.Migrator/Cassandra.Fluent.Migrator.csproj

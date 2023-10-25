@@ -16,7 +16,6 @@
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <RepositoryUrl>https://github.com/Youssef-ben/Cassandra.Fluent.Migrator</RepositoryUrl>
         <PackageProjectUrl>https://github.com/Youssef-ben/Cassandra.Fluent.Migrator#readme</PackageProjectUrl>
-        <PackageLicenseUrl>https://github.com/Youssef-ben/Cassandra.Fluent.Migrator/blob/dev/LICENSE</PackageLicenseUrl>
         <PackageTags>CSharp, cassandra, migrations, .NetCore3, net5+, migrator, cassandra migrator, cassandra migrations, cassandra fluent, fluent code, fluent cassandra migration, fluent cassandra migrator</PackageTags>
 
         <NoWarn>$(NoWarn);1591</NoWarn>

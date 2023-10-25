@@ -5,6 +5,20 @@ All notable changes to the `Cassandra Fluent Migrator` project will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.4] - [Date: 2023-10-24]
+
+### Added
+
+- Added a new Example project using the Net7
+
+### Changed
+
+- Updated to the latest version of the `DataStax` library `CassandraCSharpDriver v3.19.x`.
+- Updated the packages to use the latest version
+- Updated the test project to the latest framework version
+- Refactored the test project and now start the cassandra container automatically.
+- Updated the documentation of some methods.
+
 ## [v1.0.3] - [Date: 2022-03-06]
 
 ### WIP

@@ -14,7 +14,7 @@ test: ## Run the library tests.
 
 clean-build: ## Clean the project Build.
 	@echo "[INF] - Cleanning the project...."
-	@find . -not -path "./.git/*" -not -path "./.github/*" | grep -E '(bin|obj)' | xargs rm -rf
+	@find . -not -path "./.git/*" -not -path "./.github/*" | grep -E '(bin|obj|TestResults)' | xargs rm -rf
 
 app-help: ## Shows the current Makefile Commands.
 	@echo "" 
