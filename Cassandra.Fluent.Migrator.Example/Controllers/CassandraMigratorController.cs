@@ -1,6 +1,6 @@
 ﻿namespace Cassandra.Fluent.Migrator.Example.Controllers
 {
-    using Cassandra.Fluent.Migrator.Core;
+    using Core;
     using Microsoft.AspNetCore.Mvc;
 
     [ApiController]
@@ -16,23 +16,23 @@
 
         [HttpGet]
         [Route("registered")]
-        public IActionResult GetResistredMigrationAsync()
+        public IActionResult GetRegisteredMigrationAsync()
         {
-            return this.Ok(this.migrator.GetRegisteredMigrations());
+            return this.Ok(migrator.GetRegisteredMigrations());
         }
 
         [HttpGet]
         [Route("applied")]
         public IActionResult GetAppliedMigrationAsync()
         {
-            return this.Ok(this.migrator.GetAppliedMigrations());
+            return this.Ok(migrator.GetAppliedMigrations());
         }
 
         [HttpGet]
         [Route("latest")]
         public IActionResult GetLatestAppliedMigrationAsync()
         {
-            return this.Ok(this.migrator.GetLatestMigration());
+            return this.Ok(migrator.GetLatestMigration());
         }
     }
 }

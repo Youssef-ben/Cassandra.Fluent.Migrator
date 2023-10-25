@@ -1,0 +1,26 @@
+version: "3.8"
+
+networks:
+  cassandra-test-network:
+    name: cfm-test-database
+
+volumes:
+  cassandra-test-volume:
+    name: cfm-test-database
+
+services:
+  cfm-test-database:
+    container_name: cfm-test-database
+    image: cassandra:latest
+    
+    environment:
+      CASSANDRA_CLUSTER_NAME: cfm-test-database
+    
+    networks:
+      - cassandra-test-network
+    
+    ports:
+      - "9050:9042"
+    
+    volumes:
+      - cassandra-test-volume:/var/lib/cassandra
