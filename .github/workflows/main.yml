@@ -1,29 +1,17 @@
 name: Cassandra Fluent library
 
 on:
-  push:
   pull_request:
-    branches: [master, dev]
+  push:
+    branches: [master]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: "3.1.x"
-
-      - name: Restore packages
-        run: dotnet restore
-
-      - name: Build project
-        run: dotnet build
-
-  test:
-    needs: build
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet: ["3.1.x", "5.0.x", "7.0.x"]
 
     services:
       cfm-cassandra:
@@ -37,10 +25,18 @@ jobs:
         options: --health-cmd "cqlsh --debug" --health-interval 10s --health-retries 10
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: "3.1.x"
+      - uses: actions/checkout@v3
 
-      - name: Run tests
-        run: dotnet test
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ matrix.dotnet }}
+
+      - name: Restoring packages
+        run: dotnet restore
+
+      - name: Building
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Testing
+        run: dotnet test --no-restore --collect:"XPlat Code Coverage" --results-directory ./TestResults/.coverage
