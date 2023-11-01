@@ -1,14 +1,13 @@
-﻿namespace Cassandra.Fluent.Migrator.Tests.Models
+﻿namespace Cassandra.Fluent.Migrator.Tests.Models;
+
+using Mapping.Attributes;
+
+public class CfmHelperObject
 {
-    using Cassandra.Mapping.Attributes;
+    [PartitionKey]
+    public int Id { get; set; }
 
-    public class CfmHelperObject
-    {
-        [PartitionKey]
-        public int Id { get; set; }
+    public string Values { get; set; }
 
-        public string Values { get; set; }
-
-        public bool AddedColumnFromTestwithoutType { get; set; }
-    }
+    public bool AddedColumnFromTestWithoutType { get; set; }
 }

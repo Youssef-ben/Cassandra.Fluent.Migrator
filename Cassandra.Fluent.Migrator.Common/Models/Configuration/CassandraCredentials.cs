@@ -1,9 +1,11 @@
-﻿namespace Cassandra.Fluent.Migrator.Common.Models.Configuration
-{
-    public class CassandraCredentials
-    {
-        public string Username { get; set; }
+﻿namespace Cassandra.Fluent.Migrator.Common.Models.Configuration;
 
-        public string Password { get; set; }
-    }
+using System.Diagnostics.CodeAnalysis;
+
+[ExcludeFromCodeCoverage]
+public class CassandraCredentials
+{
+    public string Username { get; set; }
+
+    public string Password { get; set; }
 }

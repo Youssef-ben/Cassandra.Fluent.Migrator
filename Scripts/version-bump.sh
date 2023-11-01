@@ -33,6 +33,6 @@ case "$1" in
     exit 4
 esac
 
-NEW_VERSION="${parts[0]}.${parts[1]}.${parts[2]}"
+export NEW_VERSION="${parts[0]}.${parts[1]}.${parts[2]}"
 $(sed -i -e "s/<Version>$CURRENT_VERSION<\/Version>/<Version>$NEW_VERSION<\/Version>/g" $PROJECT_PATH)
 echo $NEW_VERSION
