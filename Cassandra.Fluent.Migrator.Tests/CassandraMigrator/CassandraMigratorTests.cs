@@ -1,118 +1,114 @@
-﻿namespace Cassandra.Fluent.Migrator.Tests.CassandraMigrator
+﻿namespace Cassandra.Fluent.Migrator.Tests.CassandraMigrator;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Configuration.Fixture;
+using Configuration.Fixture.Docker;
+using Core;
+using Core.Models;
+using Models.Domain;
+using Xunit;
+using Xunit.Priority;
+
+/// <summary>
+///     IMPORTANT NOTE: the use of {nameof(...)} in this test file is only
+///     to make sure that we have a consistency and the tests don't break
+///     BUT IN REAL WORLD application use MUST use a "string" for the migrations.
+/// </summary>
+[Collection(DockerComposeServiceFixtureCollection.COLLECTION_NAME)]
+[TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)]
+public class CassandraMigratorTests : IClassFixture<CassandraMigratorFixture>
 {
-    using System;
-    using System.Linq;
-    using Cassandra.Fluent.Migrator.Common.Configuration;
-    using Cassandra.Fluent.Migrator.Common.Models;
-    using Cassandra.Fluent.Migrator.Core;
-    using Cassandra.Fluent.Migrator.Helper;
-    using Microsoft.Extensions.Logging;
-    using Xunit;
-    using Xunit.Priority;
+    private readonly CassandraMigratorFixture fixture;
 
-    /// <summary>
-    /// IMPORTANT NOTE: the use of {nameof(...)} in this test file is only
-    /// to make sure that we have a consistency and the tests don't break
-    /// BUT IN REAL WORLD application use MUST use a "string" for the migrations.
-    /// </summary>
-    [TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)]
-    public class CassandraMigratorTests
+    public CassandraMigratorTests(CassandraMigratorFixture fixture)
     {
-        private readonly ICassandraMigrator migrator;
-        private readonly ICassandraFluentMigrator cfm;
+        this.fixture = fixture;
+    }
 
-        public CassandraMigratorTests()
-        {
-            if (this.migrator is null)
-            {
-                var serviceProvider = this.GetTestInMemoryProvider();
-                var logger = serviceProvider.GetTestService<ILogger<CassandraMigrator>>();
+    [Fact]
+    [Priority(0)]
+    public void GetRegisteredMigrations_Success()
+    {
+        ICollection<IMigrator> result = fixture.Migrator.GetRegisteredMigrations();
 
-                this.migrator = new CassandraMigrator(serviceProvider, logger);
-                this.cfm = serviceProvider.GetTestService<ICassandraFluentMigrator>();
-            }
-        }
+        Assert.NotNull(result);
+        Assert.NotEmpty(result);
+        Assert.Equal(new Version(1, 0, 0), result.FirstOrDefault()?.Version);
+    }
 
-        [Fact]
-        [Priority(0)]
-        public void GetRegisteredMigrations_Success()
-        {
-            var result = this.migrator.GetRegisteredMigrations();
+    [Fact]
+    [Priority(1)]
+    public void GetAppliedMigration_Empty_Success()
+    {
+        ICollection<MigrationHistory> result = fixture.Migrator.GetAppliedMigrations();
 
-            Assert.NotNull(result);
-            Assert.NotEmpty(result);
-            Assert.Equal(new Version(1, 0, 0), result.FirstOrDefault().Version);
-        }
+        Assert.NotNull(result);
+        Assert.Empty(result);
+    }
 
-        [Fact]
-        [Priority(1)]
-        public void GetAppliedMigration_Empty_Success()
-        {
-            var result = this.migrator.GetAppliedMigrations();
+    [Fact]
+    [Priority(2)]
+    public void GetLatestMigration_Null_Success()
+    {
+        MigrationHistory result = fixture.Migrator.GetLatestMigration();
 
-            Assert.NotNull(result);
-            Assert.Empty(result);
-        }
+        Assert.Null(result);
+    }
 
-        [Fact]
-        [Priority(2)]
-        public void GetLatestMigration_Null_Success()
-        {
-            var result = this.migrator.GetLatestMigration();
+    [Fact]
+    [Priority(3)]
+    public void MigrateSchema_Success()
+    {
+        var result = fixture.Migrator.Migrate();
 
-            Assert.Null(result);
-        }
+        Assert.Equal(1, result);
 
-        [Fact]
-        [Priority(3)]
-        public void MigrateSchema_Success()
-        {
-            var result = this.migrator.Migrate();
+        Assert.True(fixture.MigratorHelper.DoesTableExists(nameof(Users)));
+        Assert.True(fixture.MigratorHelper.DoesUdtExists(nameof(Address)));
+    }
 
-            Assert.Equal(1, result);
+    [Fact]
+    [Priority(4)]
+    public void MigrateSchema_Nothing_Should_be_applied_Success()
+    {
+        var result = fixture.Migrator.Migrate();
 
-            Assert.True(this.cfm.DoesTableExists(nameof(Users)));
-            Assert.True(this.cfm.DoesUdtExists(nameof(Address)));
-        }
+        Assert.Equal(0, result);
+    }
 
-        [Fact]
-        [Priority(4)]
-        public void MigrateSchema_Nothing_Should_be_applied_Success()
-        {
-            var result = this.migrator.Migrate();
+    [Fact]
+    [Priority(5)]
+    public void GetAppliedMigration_Success()
+    {
+        ICollection<MigrationHistory> result = fixture.Migrator.GetAppliedMigrations();
 
-            Assert.Equal(0, result);
-        }
+        Assert.NotNull(result);
+        Assert.NotEmpty(result);
 
-        [Fact]
-        [Priority(5)]
-        public void GetAppliedMigration_Success()
-        {
-            var result = this.migrator.GetAppliedMigrations();
+        Assert.Equal("1.0.0", result.FirstOrDefault()?.Version);
+    }
 
-            Assert.NotNull(result);
-            Assert.NotEmpty(result);
+    [Fact]
+    [Priority(5)]
+    public void GetLatestMigration_Success()
+    {
+        MigrationHistory result = fixture.Migrator.GetLatestMigration();
 
-            Assert.Equal("1.0.0", result.FirstOrDefault().Version);
-        }
+        Assert.NotNull(result);
+        Assert.Equal("1.0.0", result.Version);
+    }
 
-        [Fact]
-        [Priority(5)]
-        public void GetLatestMigration_Success()
-        {
-            var result = this.migrator.GetLatestMigration();
+    [Fact]
+    [Priority(100)]
+    public async Task RemoveKeyspace_and_ShutdownTheSession()
+    {
+        ISession session = fixture.MigratorHelper.GetCassandraSession();
+        Assert.NotNull(session);
 
-            Assert.NotNull(result);
-            Assert.Equal("1.0.0", result.Version);
-        }
-
-        [Fact]
-        [Priority(100)]
-        public async void RemoveKeyspace_and_ShutdownTheSession()
-        {
-            var session = this.cfm.GetCassandraSession();
-            session.DeleteKeyspaceIfExists(session.Keyspace);
-            await session.ShutdownAsync();
-        }
+        session.DeleteKeyspaceIfExists(session.Keyspace);
+        await session.ShutdownAsync();
     }
 }

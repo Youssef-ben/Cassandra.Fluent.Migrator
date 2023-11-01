@@ -1,7 +1,7 @@
 .PHONY: pack publish remove-package release-help
 
 LIBRARY_NAME	= Cassandra.Fluent.Migrator
-VERSION 		= $(shell ./version-bump.sh -get ./$(LIBRARY_NAME)/$(LIBRARY_NAME).csproj)
+VERSION 		= $(shell ./Scripts/version-bump.sh -get ./$(LIBRARY_NAME)/$(LIBRARY_NAME).csproj)
 NUGET_KEY		= undefined
 
 # Used for bumping the version. Accepted values [major|minor|patch].
@@ -9,7 +9,7 @@ PART			= patch
 
 bump-version: ## Bumps the version of the file. [PART=[major|minor|patch]]
 	@echo "[INF] - Bumping the [$(PART)] part of the current version [$(VERSION)]..."
-	@$(eval VERSION = $(shell ./version-bump.sh $(PART) ./$(LIBRARY_NAME)/$(LIBRARY_NAME).csproj))
+	@$(eval VERSION = $(shell ./Scripts/version-bump.sh $(PART) ./$(LIBRARY_NAME)/$(LIBRARY_NAME).csproj))
 	@echo "[INF] - Bumped the [$(PART)] version to [${VERSION}]!"
 
 pack: bump-version remove-package ## Pack the library and generate the output in the {NuGet.Packages}. Require {VERSION}

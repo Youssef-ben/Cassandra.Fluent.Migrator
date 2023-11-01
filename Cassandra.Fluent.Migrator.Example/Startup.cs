@@ -1,30 +1,30 @@
 ﻿namespace Cassandra.Fluent.Migrator.Example
 {
-    using Cassandra.Fluent.Migrator.Common.Configuration;
-    using Cassandra.Fluent.Migrator.Example.Migrations;
+    using Extensions;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Migrations;
 
     public class Startup
     {
         public Startup(IConfiguration configuration)
         {
-            this.Configuration = configuration;
+            Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
 
             services
-                .AddCassandraSession(this.Configuration)
-                .AddCassandraFluentMigratorServices()
-                .AddCassandraMigrations();
+                    .AddCassandraSession(Configuration)
+                    .AddCassandraFluentMigratorServices()
+                    .AddCassandraMigrations();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -35,14 +35,14 @@
             }
 
             app
-                .UseCassandraMigration()
-                .UseHttpsRedirection()
-                .UseRouting()
-                .UseAuthorization()
-                .UseEndpoints(endpoints =>
-                {
-                    endpoints.MapControllers();
-                });
+                    .UseCassandraMigration()
+                    .UseHttpsRedirection()
+                    .UseRouting()
+                    .UseAuthorization()
+                    .UseEndpoints(endpoints =>
+                    {
+                        endpoints.MapControllers();
+                    });
         }
     }
 }
