@@ -49,6 +49,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}
+          ssh-key: ${{ secrets.REPO_ACCESS_TOKEN }}
 
       - name: Get current Version
         run: echo "CURRENT_VERSION=$(./Scripts/version-bump.sh -get Cassandra.Fluent.Migrator/Cassandra.Fluent.Migrator.csproj)" >> $GITHUB_ENV
