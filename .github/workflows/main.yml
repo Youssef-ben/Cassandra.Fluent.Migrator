@@ -40,27 +40,3 @@ jobs:
 
       - name: Testing
         run: dotnet test --no-restore --collect:"XPlat Code Coverage" --results-directory ./TestResults/.coverage
-
-  bump-version:
-    runs-on: ubuntu-latest
-    needs: [build]
-    if: github.ref == 'refs/heads/master'
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.head_ref }}
-          ssh-key: ${{ secrets.REPO_ACCESS_TOKEN }}
-
-      - name: Get current Version
-        run: echo "CURRENT_VERSION=$(./Scripts/version-bump.sh -get Cassandra.Fluent.Migrator/Cassandra.Fluent.Migrator.csproj)" >> $GITHUB_ENV
-
-      - name: Bump Version
-        run: echo "NEW_VERSION=$(./Scripts/version-bump.sh patch Cassandra.Fluent.Migrator/Cassandra.Fluent.Migrator.csproj)" >> $GITHUB_ENV
-
-      - name: Push changes to the repository
-        run: |
-          git config --global user.name 'GitHub Action' 
-          git config --global user.email 'github-action@github.com'
-          git add -A
-          git commit -m '[skip ci] Library version bumped from [${{ env.CURRENT_VERSION }}] to [${{ env.NEW_VERSION }}] !'
-          git push
